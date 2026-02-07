@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+
+    <header>
+        <h1>🎮 Game Portal</h1>
+    </header>
+
+    <nav>
+        <a asp-page="/Index">Главная</a>
+        <a asp-page="/AddGame">Добавить игру</a>
+        <a asp-page="/About">О разработчике</a>
+    </nav>
+
+    <div class="main-wrapper">
+
+        <<aside class="left-menu">
+
+            <a asp-page="/OnlineGames/Index">Онлайн игры</a>
+
+            <a asp-page="/Games/Index">Купить игру</a>
+
+            <a asp-page="/Games/Sale">Распродажа</a>
+
+            <a asp-page="/Games/Top">Топ 10 Игр</a>
+
+            <a asp-page="/News/Index">Новости</a>
+
+        </aside>
+
+        <main>
+            @RenderBody()
+        </main>
+
+    </div>
+
+    <footer>
+        <p>© @DateTime.Now.Year</p>
+    </footer>
+
+</body>
+</html>

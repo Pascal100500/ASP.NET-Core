@@ -1,0 +1,23 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Главная";
+}
+
+<div class="form-container">
+
+    <h2 style="text-align:center;">Добро пожаловать в Game Portal 🎮</h2>
+
+    <p style="text-align:center;">
+        Здесь вы можете просматривать и приобретать игры.
+    </p>
+
+    <hr />
+
+    <div style="text-align:center;">
+        <a asp-page="/AddGame" class="btn-submit">
+            Добавить новую игру
+        </a>
+    </div>
+
+</div>

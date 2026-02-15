@@ -21,7 +21,7 @@ namespace GamePortal.Models
         [Range(3, 18, ErrorMessage = "Возраст от 3 до 18")]
         public int AgeLimit { get; set; }
 
-        public string ImageUrl { get; set; } = "";
+        public string? ImageUrl { get; set; } = "";
 
         public string? Screenshot1 { get; set; }
         public string? Screenshot2 { get; set; }

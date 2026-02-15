@@ -1,6 +1,7 @@
 ﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
+    @RenderSection("Styles", required: false)
     <meta charset="utf-8" />
     <title>@ViewData["Title"]</title>
     <link rel="stylesheet" href="~/css/site.css" />
@@ -8,18 +9,39 @@
 <body>
 
     <header>
-        <h1>🎮 Game Portal</h1>
+        <h1>🎮 Game Portal V1.0</h1>
     </header>
 
     <nav>
         <a asp-page="/Index">Главная</a>
         <a asp-page="/AddGame">Добавить игру</a>
         <a asp-page="/About">О разработчике</a>
+
+        <span style="float:right">
+            @if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                <span>Привет, @User.Identity.Name!</span>
+                <form asp-area="Identity"
+                      asp-page="/Account/Logout"
+                      method="post"
+                      style="display:inline;">
+                    <button type="submit" class="btn-submit" style="width:auto; padding:5px 10px;">
+                        Выйти
+                    </button>
+                </form>
+            }
+            else
+            {
+                <a asp-area="Identity" asp-page="/Account/Login">Вход</a>
+                <a asp-area="Identity" asp-page="/Account/Register">Регистрация</a>
+            }
+        </span>
+
     </nav>
 
     <div class="main-wrapper">
 
-        <<aside class="left-menu">
+        <aside class="left-menu">
 
             <a asp-page="/OnlineGames/Index">Онлайн игры</a>
 
@@ -43,5 +65,12 @@
         <p>© @DateTime.Now.Year</p>
     </footer>
 
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!--
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+    -->
+    @RenderSection("Scripts", required: false)
+    
 </body>
 </html>

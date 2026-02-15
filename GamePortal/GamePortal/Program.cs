@@ -1,13 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using GamePortal.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1️⃣ Определяем провайдер
 var dbProvider = builder.Configuration["DbProvider"];
 
-// 2️⃣ Регистрируем DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     switch (dbProvider)
@@ -26,14 +24,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     }
 });
 
-// 3️⃣ Подключаем Identity
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
 })
 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-// 4️⃣ Razor Pages
 builder.Services.AddRazorPages();
 
 var app = builder.Build();
@@ -50,7 +46,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthentication(); // 👈 обязательно
+app.UseAuthentication(); 
 app.UseAuthorization();
 
 app.MapRazorPages();

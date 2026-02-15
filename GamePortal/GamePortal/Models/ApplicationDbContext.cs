@@ -14,5 +14,16 @@ namespace GamePortal.Models
         public DbSet<Category> Categories { get; set; }
         public DbSet<News> News { get; set; }
         public DbSet<Purchase> Purchases { get; set; }
+
+        //Для указания точности для типа данных Decimal
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Game>()
+                .Property(g => g.Price)
+                .HasPrecision(18, 2);
+        }
     }
+
 }

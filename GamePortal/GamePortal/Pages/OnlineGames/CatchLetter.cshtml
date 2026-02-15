@@ -1,4 +1,30 @@
 ﻿@page
-@model GamePortal.Pages.OnlineGames.CatchLetterModel
-@{
+@model CatchLetterModel
+@section Styles {
+    <link rel="stylesheet" href="~/css/catchletter.css" />
 }
+
+@section Scripts {
+    <script src="~/js/catchletter.js"></script>
+}
+@{
+    ViewData["Title"] = "Лови букву";
+}
+
+<h2>Лови букву</h2>
+
+<div class="game-container">
+    <div class="word">
+        <span class="letter" style="--i:1">Ф</span>
+        <span class="letter" style="--i:2">О</span>
+        <span class="letter" style="--i:3">Р</span>
+        <span id="target" class="letter" style="--i:4">М</span>
+        <span class="letter" style="--i:5">О</span>
+        <span class="letter" style="--i:6">Ш</span>
+        <span class="letter" style="--i:7">Л</span>
+        <span class="letter" style="--i:8">Ё</span>
+        <span class="letter" style="--i:9">П</span>
+    </div>
+
+    <button id="resetBtn">Сброс</button>
+</div>

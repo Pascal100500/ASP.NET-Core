@@ -1,14 +1,14 @@
 ﻿@page
-@model OnlineGamesModel
+@model IndexModel
 @{
     ViewData["Title"] = "Онлайн игры";
 }
 
 <h2>Онлайн игры</h2>
 
-<div class="games-list">
+<div class="online-games-container">
 
-    <div class="game-card">
+    <div class="online-game-card">
         <h3>Лови букву</h3>
         <p>Проверь свою реакцию и внимательность!</p>
         <a asp-page="/OnlineGames/CatchLetter" class="btn-submit">
@@ -16,7 +16,7 @@
         </a>
     </div>
 
-    <div class="game-card">
+    <div class="online-game-card">
         <h3>Математическая игра</h3>
         <p>Прокачай свои навыки устного счёта.</p>
         <a asp-page="/OnlineGames/MathGame" class="btn-submit">

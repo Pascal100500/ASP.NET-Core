@@ -2,3 +2,51 @@
 @model GamePortal.Pages.Games.IndexModel
 @{
 }
+
+<h2>Список игр</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div style="color: green; font-weight: bold;">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (!Model.Games.Any())
+{
+    <p>Игры пока отсутствуют.</p>
+}
+else
+{
+    <div class="games-grid">
+        @foreach (var game in Model.Games)
+        {
+            <div class="game-card">
+
+                <div class="image-wrapper">
+                    <img src="@(string.IsNullOrEmpty(game.ImageUrl)
+                                                         ? "/images/games/placeholder.jpg"
+                                                         : game.ImageUrl)"
+                 alt="@game.Title" />
+              
+
+                <div class="overlay">
+                    <p>@game.ShortDescription</p>
+                </div>
+                </div>
+
+                <div class="card-info">
+                    <h3>@game.Title</h3>
+                    <p class="price">@game.Price.ToString("0.00") ₽</p>
+                    <!--Поиск по Id-->
+                    <a asp-page="Details" asp-route-id="@game.Id" class="details-btn">Подробнее</a>
+                    <!--
+                    <a asp-page="Edit" asp-route-id="@game.Id">Редактировать</a>
+                    <a asp-page="Delete" asp-route-id="@game.Id">Удалить</a>
+                    -->
+                </div>
+
+            </div>
+        }
+    </div>
+}

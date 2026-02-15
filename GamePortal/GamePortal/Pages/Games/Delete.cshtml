@@ -1,0 +1,24 @@
+﻿@page "{id:int}"
+@model GamePortal.Pages.Games.DeleteModel
+
+<h2>Удаление игры</h2>
+
+@if (Model.Game != null)
+{
+    <div style="border:1px solid #ccc; padding:15px;">
+        <h3>@Model.Game.Title</h3>
+        <p>@Model.Game.ShortDescription</p>
+        <p><strong>Цена:</strong> @Model.Game.Price ₽</p>
+    </div>
+
+    <br />
+
+    <form method="post">
+        <button type="submit" class="btn-submit" style="background-color: darkred;">
+            Подтвердить удаление
+        </button>
+    </form>
+
+    <br />
+    <a asp-page="Index">← Отмена</a>
+}

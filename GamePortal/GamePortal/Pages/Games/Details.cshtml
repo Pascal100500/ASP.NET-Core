@@ -1,0 +1,23 @@
+﻿@page "{id:int}"
+@model GamePortal.Pages.Games.DetailsModel
+
+<!--Реализация READ по Id-->
+
+<h2>@Model.Game!.Title</h2>
+
+<div style="border:1px solid #ccc; padding:15px;">
+    <p><strong>Описание:</strong></p>
+    <p>@Model.Game.FullDescription</p>
+
+    <p><strong>Цена:</strong> @Model.Game.Price ₽</p>
+    <p><strong>Возраст:</strong> @Model.Game.AgeLimit +</p>
+</div>
+
+<br />
+
+<form method="post">
+    <input type="hidden" name="id" value="@Model.Game.Id" />
+    <button type="submit" class="buy-btn">Купить (Добавит запись о покупке в БД)</button>
+</form>
+
+<a asp-page="Index">← Назад к списку игр</a>

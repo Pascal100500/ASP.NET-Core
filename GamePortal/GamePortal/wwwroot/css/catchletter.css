@@ -1,0 +1,31 @@
+﻿.game-container {
+    text-align: center;
+    margin-top: 50px;
+}
+
+.word {
+    font-size: 48px;
+    font-weight: bold;
+}
+
+.letter {
+    display: inline-block;
+    margin: 5px;
+    animation: jump 2s infinite;
+    animation-delay: calc(0.15s * var(--i));
+    cursor: pointer;
+}
+
+@keyframes jump {
+    0%, 50%, 100% {
+        transform: translateY(0);
+    }
+
+    25% {
+        transform: translateY(-40px);
+    }
+}
+
+#target {
+    color: red;
+}

@@ -1,5 +1,8 @@
-﻿namespace GamePortal.Models
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace GamePortal.Models
 {
+    [Index(nameof(UserId), nameof(GameId), IsUnique = true)]
     public class Purchase
     {
         public int Id { get; set; }

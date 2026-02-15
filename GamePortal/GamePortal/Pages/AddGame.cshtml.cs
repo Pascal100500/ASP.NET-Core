@@ -2,28 +2,34 @@ using GamePortal.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace GamePortal.Pages
+public class AddGameModel : PageModel
 {
-    public class AddGameModel : PageModel
+    private readonly ApplicationDbContext _context;
+
+    public AddGameModel(ApplicationDbContext context)
     {
-        [BindProperty]
-        public Game Game { get; set; } = new();
+        _context = context;
+    }
 
-        public string Message { get; private set; } = "Добавление игры";
+    [BindProperty]
+    public Game Game { get; set; } = new();
 
-        public void OnGet()
+    [TempData]
+    public string? SuccessMessage { get; set; } // Для вывода сообщения об успешном дополнении игры!
+
+    // Опереция CREATE
+    public IActionResult OnPost()
+    {
+        if (!ModelState.IsValid)
         {
+            return Page();
         }
 
-        public void OnPost()
-        {
-            if (!ModelState.IsValid)
-            {
-                Message = "Ошибка ввода данных";
-                return;
-            }
+        _context.Games.Add(Game); // Добавление игры операция CREATE
+        _context.SaveChanges(); // Выполнение SQL запроса для реализации операции CREATE (INSERT в БД)
 
-            Message = $"Добавлена игра: {Game.Title}";
-        }
+        SuccessMessage = $"Игра \"{Game.Title}\" успешно добавлена!";
+
+        return RedirectToPage("/Games/Index");
     }
 }

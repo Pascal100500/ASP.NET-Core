@@ -1,7 +1,9 @@
 using GamePortal.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
+[Authorize(Roles = "Admin")] // Ограничиваю возможность работы с данной страницей. С ней может работать только Администратор
 public class AddGameModel : PageModel
 {
     private readonly ApplicationDbContext _context;

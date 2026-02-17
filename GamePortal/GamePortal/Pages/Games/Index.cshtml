@@ -40,10 +40,11 @@ else
                     <p class="price">@game.Price.ToString("0.00") ₽</p>
                     <!--Поиск по Id-->
                     <a asp-page="Details" asp-route-id="@game.Id" class="details-btn">Подробнее</a>
-                    <!--
-                    <a asp-page="Edit" asp-route-id="@game.Id">Редактировать</a>
-                    <a asp-page="Delete" asp-route-id="@game.Id">Удалить</a>
-                    -->
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-page="Edit" asp-route-id="@game.Id" class="admin-btn">Редактировать</a>
+                        <a asp-page="Delete" asp-route-id="@game.Id" class="admin-btn">Удалить</a>
+                    }
                 </div>
 
             </div>

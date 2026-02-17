@@ -2,14 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Text.Encodings.Web;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -18,6 +10,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using Serilog;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Text.Encodings.Web;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace GamePortal.Areas.Identity.Pages.Account
 {
@@ -120,7 +121,15 @@ namespace GamePortal.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User created a new account with password.");
+                    //_logger.LogInformation("User created a new account with password.");// Старый лог, созданный автоматически
+
+                    /*
+                     Serilog автоматически перехватывает все вызовы _logger.LogInformation(...)
+                    поэтому вместо соззданного Log.Information():
+                     Log.Information("Зарегистрирован пользователь {Email}", Input.Email);
+                    лучше оставить использовние _logger
+                     */
+                    _logger.LogInformation("Зарегистрирован пользователь {Email}", Input.Email); // Добавил логирование в файл при создании пользователя
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

@@ -67,3 +67,6 @@
 - Логирование регистрации пользователя (Serilog)
 - Настроены уровни логирования Microsoft/System (Warning)
 
+### ⚙ Использовано
+- Serilog ASP.NET Core Razor Pages
+- Serilog Sinks File

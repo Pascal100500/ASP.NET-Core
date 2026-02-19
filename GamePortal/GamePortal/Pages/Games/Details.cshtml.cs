@@ -4,18 +4,22 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using Microsoft.Extensions.Logging;
 
 namespace GamePortal.Pages.Games
 {
     public class DetailsModel : PageModel
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<DetailsModel> _logger;
 
-        public DetailsModel(ApplicationDbContext context)
+        public DetailsModel(ApplicationDbContext context, ILogger<DetailsModel> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
+        public bool IsPurchased { get; set; } // Флаг для проверки куплена ли игра или нет
         public Game? Game { get; set; }
 
         // Операция READ по id
@@ -26,6 +30,14 @@ namespace GamePortal.Pages.Games
             if (Game == null)
             {
                 return NotFound();
+            }
+
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                IsPurchased = _context.Purchases
+                    .Any(p => p.GameId == id && p.UserId == userId);
             }
 
             return Page();
@@ -43,18 +55,8 @@ namespace GamePortal.Pages.Games
 
             // Проверка, куплена ли игра или еще нет
             // Сейчас реализовано на базе уровне базы данных через [Index(nameof(UserId), nameof(GameId), IsUnique = true)]
-            /*
-            var alreadyPurchased = _context.Purchases
-            .Any(p => p.GameId == id && p.UserId == userId);
-
-            if (alreadyPurchased)
-            {
-                TempData["SuccessMessage"] = "Вы уже купили эту игру!";
-                return RedirectToPage();
-            }
-            */
-
-            // Сама покупка игры
+                                 
+            // При покупке кнопка просто изменится на "Куплено", а она не привязана к методу OnPost
             var purchase = new Purchase
             {
                 GameId = id,
@@ -69,10 +71,14 @@ namespace GamePortal.Pages.Games
                 _context.SaveChanges();
 
                 TempData["SuccessMessage"] = "Игра успешно куплена!";
+
+                _logger.LogInformation("Пользователь {UserId} совершил покупку игры {GameId}", userId, id);
             }
-            catch (DbUpdateException)
+            catch (DbUpdateException) // ЭТО ИСКЛЮЧЕНИЕ НЕ ДОЛЖНО ПРОИСХОДИТЬ, так как кнопка куплено не отправляет POST
             {
-                TempData["SuccessMessage"] = "Вы уже купили эту игру!";
+                _logger.LogWarning ("Ошибка покупки пользователем {UserId} игры {GameId}", userId, id);
+
+                TempData["SuccessMessage"] = "Игра уже куплена";
             }
 
             return RedirectToPage();

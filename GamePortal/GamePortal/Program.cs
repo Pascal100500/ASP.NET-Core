@@ -7,9 +7,10 @@ using Serilog.Events;
 // Создание логов для пользователей
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
-    // Чтобы в лог файл сейчас попадала только тнформация о создании пользователя и важные ошибки
+    // Чтобы в лог файл сейчас попадала только информация о создании пользователя и важные ошибки
     .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
     .MinimumLevel.Override("System", LogEventLevel.Warning)
+    .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Error) // Попробовал понизить уровень логирования до ошибок 
     .WriteTo.Console()
     //
     .WriteTo.File(

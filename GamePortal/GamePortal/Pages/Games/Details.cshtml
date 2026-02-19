@@ -17,7 +17,14 @@
 
 <form method="post">
     <input type="hidden" name="id" value="@Model.Game.Id" />
-    <button type="submit" class="buy-btn">Купить (Добавит запись о покупке в БД)</button>
+    @if (Model.IsPurchased)
+    {
+        <button class="buy-btn purchased" disabled>Куплено</button>
+    }
+    else
+    { 
+            <button type="submit" class="buy-btn">Купить</button>
+    }
 </form>
 
 <a asp-page="Index">← Назад к списку игр</a>

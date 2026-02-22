@@ -3,11 +3,34 @@
 
 <!--Реализация READ по Id-->
 
-<h2>@Model.Game!.Title</h2>
+<h2 class="game-title">@Model.Game!.Title</h2>
+
+<div class="details-cover">
+    <img src="@(string.IsNullOrEmpty(Model.Game.ImageUrl)
+                 ? "/images/games/placeholder.jpg"
+                 : Model.Game.ImageUrl)"
+         alt="@Model.Game.Title" />
+</div>
+
 
 <div style="border:1px solid #ccc; padding:15px;">
     <p><strong>Описание:</strong></p>
-    <p>@Model.Game.FullDescription</p>
+    <p class="full-description">@Model.Game.FullDescription</p>
+
+    <div class="details-screenshots">
+        @if (!string.IsNullOrEmpty(Model.Game.Screenshot1))
+        {
+            <img src="@Model.Game.Screenshot1" />
+        }
+        @if (!string.IsNullOrEmpty(Model.Game.Screenshot2))
+        {
+            <img src="@Model.Game.Screenshot2" />
+        }
+        @if (!string.IsNullOrEmpty(Model.Game.Screenshot3))
+        {
+            <img src="@Model.Game.Screenshot3" />
+        }
+    </div>
 
     <p><strong>Цена:</strong> @Model.Game.Price ₽</p>
     <p><strong>Возраст:</strong> @Model.Game.AgeLimit +</p>
@@ -17,14 +40,22 @@
 
 <form method="post">
     <input type="hidden" name="id" value="@Model.Game.Id" />
+    <!--
+ <form method="post" asp-route-id="@Model.Game.Id">
+     -->
     @if (Model.IsPurchased)
     {
         <button class="buy-btn purchased" disabled>Куплено</button>
     }
-    else
-    { 
-            <button type="submit" class="buy-btn">Купить</button>
+    else if (Model.IsInCart)
+    {
+        <button class="buy-btn purchased" disabled>Уже в корзине</button>
     }
+    else
+    {
+        <button type="submit" class="buy-btn">Добавить в корзину</button>
+    }
+    <a asp-page="/Cart/Index" class="btn-go-cart">Перейти в корзину</a>
 </form>
 
 <a asp-page="Index">← Назад к списку игр</a>

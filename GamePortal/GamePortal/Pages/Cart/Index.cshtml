@@ -1,0 +1,53 @@
+﻿@page
+@model GamePortal.Pages.Cart.IndexModel
+
+<h2>Корзина</h2>
+
+@if (!Model.CartItems.Any())
+{
+    <p>Корзина пуста.</p>
+}
+else
+{
+    <table class="table-cart">
+        <thead>
+            <tr>
+                <th>Игра</th>
+                <th>Цена</th>
+                <th>Статус</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.CartItems)
+            {
+                <tr>
+                    <td>@item.Game?.Title</td>
+                    <td>@item.Game?.Price</td>
+                    <td>
+                        @if (!item.Game!.IsActive)
+                        {
+                            <span class="text-cart-unavailable">Недоступна</span>
+                        }
+                        else
+                        {
+                            <span class="text-cart-available">Доступна</span>
+                        }
+                    </td>
+                    <td>
+                        <form method="post" asp-page-handler="Remove">
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button class="btn-cart-del">Удалить</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <h4>Итого: @Model.Total</h4>
+
+    <form method="post" asp-page-handler="Checkout">
+    <button class="btn-cart-pay" disabled="@(Model.Total == 0)">Оплатить</button>
+    </form>
+}

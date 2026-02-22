@@ -20,16 +20,16 @@ namespace GamePortal.Pages.Games
 
         public void OnGet()
         {
-            Games = _context.Games.ToList(); // Операция SELECT для операции READ
-
-            //==Возможная покупка==
-           /* var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            Purchases = _context.Purchases
-                .Where(p => p.UserId == userId)
-                .Include(p => p.Game)
-                .ToList();
-           */
+            if (User.IsInRole("Admin"))
+            {
+                Games = _context.Games.ToList();// Операция SELECT для операции READ
+            }
+            else
+            {
+                Games = _context.Games
+                    .Where(g => g.IsActive)
+                    .ToList();
+            }
         }
     }
 }

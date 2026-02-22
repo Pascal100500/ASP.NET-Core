@@ -21,9 +21,25 @@
 ## [v1.1.1] - 2026-02-19
 
 ### Changed
-- Понижен уровень логирования EF Core до Error
-- Добавлено логирование покупки игры
+- EF Core logging level has been lowered to Error
+- Added logging of game purchases
 
 ### Added
 - Кнопка "Куплено" вместо повторной покупки
 - Визуальный индикатор купленной игры
+
+## [v1.2.0] - 2026-02-22
+
+### Added
+- Shopping Cart system (CartItems entity)
+- Checkout process with transaction
+- Price fixation at purchase moment (PriceAtPurchase)
+- Cart page with total calculation
+- Protection against duplicate cart entries
+- Active/Inactive game handling
+- Three full demo games with images and descriptions
+
+### Changed
+- Purchase logic redesigned (Cart → Checkout → Purchases)
+- Details page redesigned (cover image, screenshots layout)
+- Games Index now hides inactive games for non-admin users

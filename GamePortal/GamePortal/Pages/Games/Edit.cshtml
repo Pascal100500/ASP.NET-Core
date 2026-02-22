@@ -24,6 +24,33 @@
         </div>
 
         <div class="form-group">
+            <label asp-for="Game.CategoryId"></label>
+            <select asp-for="Game.CategoryId" asp-items="Model.Categories">
+                <option value="">-- Выберите категорию --</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Game.ImageUrl"></label>
+            <input asp-for="Game.ImageUrl" />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Game.Screenshot1"></label>
+            <input asp-for="Game.Screenshot1" />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Game.Screenshot2"></label>
+            <input asp-for="Game.Screenshot2" />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Game.Screenshot3"></label>
+            <input asp-for="Game.Screenshot3" />
+        </div>
+
+        <div class="form-group">
             <label asp-for="Game.Price"></label>
             <input asp-for="Game.Price" />
         </div>
@@ -31,6 +58,21 @@
         <div class="form-group">
             <label asp-for="Game.AgeLimit"></label>
             <input asp-for="Game.AgeLimit" />
+        </div>
+
+        <div class="form-group checkbox-group">
+            <input asp-for="Game.IsOnSale" />
+            <label asp-for="Game.IsOnSale"></label>
+        </div>
+
+        <div class="form-group checkbox-group">
+            <input asp-for="Game.IsTopGame" />
+            <label asp-for="Game.IsTopGame"></label>
+        </div>
+
+        <div class="form-group checkbox-group">
+            <input asp-for="Game.IsActive" />
+            <label asp-for="Game.IsActive">Активна для продажи</label>
         </div>
 
         <button type="submit" class="btn-submit">

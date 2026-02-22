@@ -32,6 +32,8 @@ namespace GamePortal.Models
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
+        public bool IsActive { get; set; } = true; //Если игра будет удалена админом из продажи, но потом вновь появится.
+
         // Связь с категорией
         public int? CategoryId { get; set; }
         public Category? Category { get; set; }

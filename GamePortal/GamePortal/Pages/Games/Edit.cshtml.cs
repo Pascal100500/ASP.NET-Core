@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace GamePortal.Pages.Games
 {
@@ -18,6 +20,8 @@ namespace GamePortal.Pages.Games
         [BindProperty]
         public Game Game { get; set; } = new();
 
+        public SelectList? Categories { get; set; }
+
         //Получение данных для изменения!
         // Еще один READ по id
         public IActionResult OnGet(int id)
@@ -28,6 +32,7 @@ namespace GamePortal.Pages.Games
                 return NotFound();
 
             Game = gameFromDb;
+            Categories = new SelectList(_context.Categories, "Id", "Name", Game.CategoryId);
             return Page();
         }
 
@@ -35,15 +40,20 @@ namespace GamePortal.Pages.Games
         public IActionResult OnPost()
         {
             if (!ModelState.IsValid)
+            {
+                Categories = new SelectList(_context.Categories, "Id", "Name", Game.CategoryId);
                 return Page();
+            }              
 
             _context.Attach(Game).State = Microsoft.EntityFrameworkCore.EntityState.Modified; // Изменить уже существующий объект (UPDATE)
 
             // Вывод сообщения об изменении сущности в консоль (до изменений)
+            /*
             foreach (var entry in _context.ChangeTracker.Entries())
             {
                 Console.WriteLine($"BEFORE SaveChanges → Entity: {entry.Entity.GetType().Name}, State: {entry.State}");
             }
+            */
 
 
             /*
@@ -54,10 +64,12 @@ namespace GamePortal.Pages.Games
             _context.SaveChanges();
 
             // Вывод сообщения об изменении сущности в консоль (после изменений)
+            /*
             foreach (var entry in _context.ChangeTracker.Entries())
             {
                 Console.WriteLine($"AFTER SaveChanges → Entity: {entry.Entity.GetType().Name}, State: {entry.State}");
             }
+            */
 
 
             return RedirectToPage("Index");

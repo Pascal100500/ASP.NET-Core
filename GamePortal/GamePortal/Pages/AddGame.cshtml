@@ -27,6 +27,11 @@
             <span asp-validation-for="Game.FullDescription"></span>
         </div>
 
+        <select asp-for="Game.CategoryId"
+                asp-items="Model.Categories">
+            <option value="">-- Выберите категорию --</option>
+        </select>
+
         <div class="form-group">
             <label asp-for="Game.Price"></label>
             <input asp-for="Game.Price" type="number" step="0.01" min="0" />

@@ -6,7 +6,7 @@
 
 <div class="form-container">
 
-    <h2 style="text-align:center;">Добро пожаловать в Game Portal V1.0 🎮</h2>
+    <h2 style="text-align:center;">Добро пожаловать в Game Portal 🎮</h2>
 
     <p style="text-align:center;">
         Здесь вы можете просматривать и приобретать игры.
@@ -113,6 +113,53 @@
             <li>Сделано UI корзины</li>
             <li>Сделано 3 полностью оформленных игры</li>
         </ul>
+
+        <h3>Что реализовано в версии 1.3 (подробнее в "README.md"):</h3>
+
+        <ol>
+            <li>
+                <strong>Добавлена поддержка REST API (Minimal API):</strong>
+                <ul>
+                    <li>Создан класс: GamesREST.cs</li>
+                    <li>Реализован полный CRUD для ресурса Game</li>
+                    <li>Используются DTO: CreateGameDto и UpdateGameDto</li>
+                    <li>Добавлена серверная валидация через ValidationProblemDetails</li>
+                </ul>
+            </li>
+            <li>
+                <strong>Добавлен Swagger</strong>
+                <ul>
+                    <li>Подключён пакет Swashbuckle.AspNetCore</li>
+                    <li>Реализован Swagger UI (https://localhost:7093/swagger)</li>
+                    <li>Возможность проверки API с помощью SWAGGER</li>
+                </ul>
+            </li>
+            <li>
+                <strong>Переработано логирование</strong>
+                <ul>
+                    <li>Стандартный ILogger заменён на Serilog</li>
+                    <li>Добавлена настройка фильтрации логов по типу пользователя через
+                        (LogContext.PushProperty("LogType", "Role"))
+                    </li>
+                    <li>Реализовано раздельное логирование:UserLog и AdminLog</li>
+                </ul>
+            </li>
+            <li>
+                <strong>Улучшена работа с Identity</strong>
+                <ul>
+                    <li>Добавлен класс RussianIdentityErrorDescriber</li>
+                    <li>Локализованы сообщения об ошибках регистрации</li>
+                    <li>Добавлена возможность показывать / скрывать пароль на форме входа и регистрации</li>
+                </ul>
+            </li>
+            <li>
+                <strong>Добавлены динамические новости (тестовый режим)</strong>
+                <ul>
+                    <li>Добавлено 9 демонстрационных новостных записей для тестирования</li>
+                    <li>На странице "Новости" отображается 6 случайных новостей</li>
+                </ul>
+            </li>
+         </ol>
 
     </div>
 

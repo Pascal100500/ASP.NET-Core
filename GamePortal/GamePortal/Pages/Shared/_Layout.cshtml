@@ -9,12 +9,16 @@
 <body>
 
     <header>
-        <h1>🎮 Game Portal V1.0</h1>
+        <h1>🎮 Game Portal V1.3</h1>
     </header>
 
     <nav>
         <a asp-page="/Index">Главная</a>
+        @if (User.IsInRole("Admin"))
+        {
         <a asp-page="/AddGame">Добавить игру</a>
+        <a asp-page="/News/Create">Добавить новость</a>
+        }
         <a asp-page="/About">О разработчике</a>
 
         <span style="float:right">

@@ -1,0 +1,36 @@
+﻿@page "{id:int}"
+@model GamePortal.Pages.News.DetailsModel
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/news.css" />
+}
+
+@if (Model.NewsItem != null)
+{
+    <div class="news-details">
+
+        <h1>@Model.NewsItem.Title</h1>
+
+        <p class="news-date">
+            @Model.NewsItem.CreatedAt.ToString("dd.MM.yyyy")
+        </p>
+
+        @if (!string.IsNullOrEmpty(Model.NewsItem.ImageUrl))
+        {
+            <div class="news-image">
+                <img src="@Model.NewsItem.ImageUrl" alt="@Model.NewsItem.Title" />
+            </div>
+        }
+
+        <div class="news-content">
+            @Model.NewsItem.Content
+        </div>
+
+        <div class="news-back">
+            <a asp-page="/News/Index" class="back-btn-news">
+                ← Назад к новостям
+            </a>
+        </div>
+
+    </div>
+}

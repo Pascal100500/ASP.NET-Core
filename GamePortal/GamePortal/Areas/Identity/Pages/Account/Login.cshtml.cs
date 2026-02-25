@@ -1,19 +1,20 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using Serilog.Context;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace GamePortal.Areas.Identity.Pages.Account
 {
@@ -80,7 +81,8 @@ namespace GamePortal.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Display(Name = "Remember me?")]
+            //[Display(Name = "Remember me?")]
+            [Display(Name = "Запомнить меня")]
             public bool RememberMe { get; set; }
         }
 
@@ -103,6 +105,8 @@ namespace GamePortal.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
+            var ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown"; // IP может быть null!!!
+
             returnUrl ??= Url.Content("~/");
 
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
@@ -114,23 +118,37 @@ namespace GamePortal.Areas.Identity.Pages.Account
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User logged in.");
+                    //  _logger.LogInformation("User logged in."); Стандартный логер
+                    using (LogContext.PushProperty("LogType", "User"))
+                    {
+                        _logger.LogInformation("Пользователь {Email} вошел в систему с IP {IP}", Input.Email, ip); // мой логер
+                    }
                     return LocalRedirect(returnUrl);
                 }
+                // Проверка, требуется ли двухфакторная аутентификация (2FA)?
                 if (result.RequiresTwoFactor)
                 {
                     return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
                 }
                 if (result.IsLockedOut)
                 {
-                    _logger.LogWarning("User account locked out.");
-                    return RedirectToPage("./Lockout");
+                    using (LogContext.PushProperty("LogType", "User"))
+                    {
+                        //_logger.LogWarning("User account locked out.");
+                        _logger.LogWarning("Пользователь {Email} заблокирован c IP {IP}", Input.Email, ip); // мой логер
+                        return RedirectToPage("./Lockout");
+                    }
                 }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                    return Page();
-                }
+                // Дополнительно ввел лог, если проблемы при попытке входа
+                
+                    using (LogContext.PushProperty("LogType", "User"))
+                    {
+                        _logger.LogWarning("Неудачная попытка входа для {Email} с IP {IP}", Input.Email, ip); // мой логер
+                    }
+                             
+                // обработка НЕУДАЧНОГО входа.ModelState хранит:ошибки валидации, ошибки логики, сообщения для UI.
+                    ModelState.AddModelError(string.Empty, "Неверный логин или пароль.");
+                    return Page();  
             }
 
             // If we got this far, something failed, redisplay form

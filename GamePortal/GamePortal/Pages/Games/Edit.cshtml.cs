@@ -1,9 +1,10 @@
-﻿using GamePortal.Models;
+using GamePortal.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Serilog.Context;
 
 namespace GamePortal.Pages.Games
 {
@@ -11,10 +12,12 @@ namespace GamePortal.Pages.Games
     public class EditModel : PageModel
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<AddGameModel> _logger;
 
-        public EditModel(ApplicationDbContext context)
+        public EditModel(ApplicationDbContext context, ILogger<AddGameModel> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         [BindProperty]
@@ -43,7 +46,7 @@ namespace GamePortal.Pages.Games
             {
                 Categories = new SelectList(_context.Categories, "Id", "Name", Game.CategoryId);
                 return Page();
-            }              
+            }
 
             _context.Attach(Game).State = Microsoft.EntityFrameworkCore.EntityState.Modified; // Изменить уже существующий объект (UPDATE)
 
@@ -63,6 +66,19 @@ namespace GamePortal.Pages.Games
              */
             _context.SaveChanges();
 
+            var adminEmail = User.Identity?.Name;
+            var ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknow"; // IP может быть null!!!
+
+            // Логирование редактирования игры. Теперь уже использую Serilog ILogger
+            using (LogContext.PushProperty("LogType", "Admin"))
+            {
+                _logger.LogInformation(
+            "Изменена игра GameId: {GameId} название: {Title} администратором: {Admin} IP: {IP}",
+            Game.Id,
+            Game.Title,
+            adminEmail,
+            ip);
+            }
             // Вывод сообщения об изменении сущности в консоль (после изменений)
             /*
             foreach (var entry in _context.ChangeTracker.Entries())

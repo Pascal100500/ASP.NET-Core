@@ -1,22 +1,42 @@
+using GamePortal;
 using GamePortal.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
 
-// Создание логов для пользователей
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
-    // Чтобы в лог файл сейчас попадала только информация о создании пользователя и важные ошибки
+    // пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
     .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
     .MinimumLevel.Override("System", LogEventLevel.Warning)
-    .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Error) // Попробовал понизить уровень логирования до ошибок 
+    .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Error) // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ 
+    .Enrich.FromLogContext()  // РґР»СЏ СЂР°Р·РґРµР»РµРЅРёСЏ РґР»СЏ РєРѕРіРѕ РІС‹РІРѕРґРёС‚СЊ Р»РѕРі, user РёР»Рё Р°РґРјРёРЅ
     .WriteTo.Console()
-    //
+
+    // User log
+    .WriteTo.Logger(lc => lc
+    .Filter.ByIncludingOnly(e =>
+        e.Properties.ContainsKey("LogType") &&
+        e.Properties["LogType"].ToString().Contains("User"))
     .WriteTo.File(
-    "Logs/LogUser.txt",
+        "Logs/user.log",
+        rollingInterval: RollingInterval.Day,
+        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}")
+    )
+    // Admin Log
+    .WriteTo.Logger(lc => lc
+    .Filter.ByIncludingOnly(e =>
+        e.Properties.ContainsKey("LogType") &&
+        e.Properties["LogType"].ToString().Contains("Admin"))
+    .WriteTo.File(
+    "Logs/admin.log",
     rollingInterval: RollingInterval.Day,
-    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level}] {Message}{NewLine}{Exception}")
+    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}") //пїЅпїЅпїЅпїЅпїЅпїЅпїЅ [{SourceContext}], пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ Level пїЅпїЅ Level:u3 (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ (INF, WRN, ERR)
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ Message Message:lj (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
+    )
     .CreateLogger();
     
 
@@ -47,12 +67,25 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
 })
-.AddRoles<IdentityRole>() // Добавление для создания роли администратора
-.AddEntityFrameworkStores<ApplicationDbContext>();
+.AddRoles<IdentityRole>() // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddErrorDescriber<RussianIdentityErrorDescriber>();
 
 builder.Services.AddRazorPages();
+//Swagger
+//  https://localhost:7093/swagger
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+#region Swagger
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+#endregion
 
 // Pipeline
 if (!app.Environment.IsDevelopment())
@@ -71,7 +104,7 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 
-// === Создание Администратора сайта ===
+// === пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ ===
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -79,13 +112,13 @@ using (var scope = app.Services.CreateScope())
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
     var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
 
-    // Создаем роль Admin если ее нет
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ Admin пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ
     if (!await roleManager.RoleExistsAsync("Admin"))
     {
         await roleManager.CreateAsync(new IdentityRole("Admin"));
     }
 
-    // Проверяем существует ли пользователь
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     var adminEmail = "admin@example.com";
     var adminUser = await userManager.FindByEmailAsync(adminEmail);
 
@@ -103,9 +136,9 @@ using (var scope = app.Services.CreateScope())
         if (result.Succeeded)
         {
             await userManager.AddToRoleAsync(newAdmin, "Admin");
-            Log.Information("Создан администратор {Email}", adminEmail); // Информация о создании админа в логфайле
+            Log.Information("Р”РѕР±Р°РІР»РµРЅ Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂ {Email}", adminEmail); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         }
     }
 }
-
+app.MapGamesApi(); // РњРѕР№ REST РґР»СЏ РёРіСЂ
 app.Run();

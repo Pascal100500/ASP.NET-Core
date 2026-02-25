@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using Serilog.Context;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -75,28 +76,31 @@ namespace GamePortal.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
-            [EmailAddress]
+            [Required(ErrorMessage = "Введите email.")]
+            [EmailAddress(ErrorMessage = "Введите корректный email адрес.")]
             [Display(Name = "Email")]
             public string Email { get; set; }
+          
+            
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [Required(ErrorMessage = "Введите пароль.")]
+            [StringLength(100, ErrorMessage = "Пароль должен содержать от {2} до {1} символов.", MinimumLength = 6)]
             [DataType(DataType.Password)]
-            [Display(Name = "Password")]
+            [Display(Name = "Пароль")]
             public string Password { get; set; }
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
+            [Required(ErrorMessage = "Подтвердите пароль.")]
             [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+            [Display(Name = "Подтверждение пароля")]
+            [Compare("Password", ErrorMessage = "Введенные пароли не совпадают")]
             public string ConfirmPassword { get; set; }
         }
 
@@ -129,7 +133,10 @@ namespace GamePortal.Areas.Identity.Pages.Account
                      Log.Information("Зарегистрирован пользователь {Email}", Input.Email);
                     лучше оставить использовние _logger
                      */
-                    _logger.LogInformation("Зарегистрирован пользователь {Email}", Input.Email); // Добавил логирование в файл при создании пользователя
+                    using (LogContext.PushProperty("LogType", "User"))
+                    {
+                        _logger.LogInformation("Зарегистрирован пользователь {Email}", Input.Email); // Добавил логирование в файл при создании пользователя
+                    }
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

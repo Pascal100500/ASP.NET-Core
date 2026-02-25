@@ -5,6 +5,67 @@
     ViewData["Title"] = "Log in";
 }
 
+<div class="login-container-logpas">
+    <h2>Вход в систему</h2>
+
+    <form method="post">
+
+        <div asp-validation-summary="ModelOnly" class="validation-error-logpas"></div>
+
+        <div class="form-group-logpas">
+            <label asp-for="Input.Email">Email</label>
+            <input asp-for="Input.Email" class="input-field-logpas" />
+            <span asp-validation-for="Input.Email" class="validation-error-logpas"></span>
+        </div>
+
+        <div class="form-group-logpas">
+            <label asp-for="Input.Password">Пароль</label>
+            <input asp-for="Input.Password" class="input-field-logpas" id="passwordInput" />
+            <span asp-validation-for="Input.Password" class="validation-error-logpas"></span>
+        </div>
+
+        <div class="form-group-logpas checkbox-group-logpas">
+            <input type="checkbox" id="showPasswordCheckbox" />
+            <label for="showPasswordCheckbox">Показывать пароль</label>
+        </div>
+
+        <div class="form-group-logpas checkbox-group-logpas">
+            <input asp-for="Input.RememberMe" />
+            <label asp-for="Input.RememberMe">Запомнить меня</label>
+        </div>
+
+        <button type="submit" class="btn-main-logpas">
+            Войти
+        </button>
+
+        <div class="login-links-logpas">
+            <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">
+                Регистрация
+            </a>
+        </div>
+
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        const checkbox = document.getElementById("showPasswordCheckbox");
+        const passwordInput = document.getElementById("passwordInput");
+
+        checkbox.addEventListener("change", function () {
+            if (this.checked) {
+                passwordInput.type = "text";
+            } else {
+                passwordInput.type = "password";
+            }
+        });
+    </script>
+}
+
+
+
+<!--
 <h1>@ViewData["Title"]</h1>
 <div class="row">
     <div class="col-md-4">
@@ -50,6 +111,7 @@
         <section>
             <h3>Use another service to log in.</h3>
             <hr />
+            @*
             @{
                 if ((Model.ExternalLogins?.Count ?? 0) == 0)
                 {
@@ -74,10 +136,12 @@
                     </form>
                 }
             }
+            *@
         </section>
     </div>
 </div>
 
-@section Scripts {
+@* @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-}
+} *@
+-->

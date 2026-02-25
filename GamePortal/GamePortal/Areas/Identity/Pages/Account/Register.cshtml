@@ -6,6 +6,65 @@
 
 <h1>@ViewData["Title"]</h1>
 
+<div class="login-container-logpas">
+    <h2>Регистрация</h2>
+
+    <form method="post" asp-route-returnUrl="@Model.ReturnUrl">
+
+        <div asp-validation-summary="ModelOnly" class="validation-error-logpas"></div>
+
+        <div class="form-group-logpas">
+            <label asp-for="Input.Email">Email</label>
+            <input asp-for="Input.Email" class="input-field-logpas" autocomplete="username" />
+            <span asp-validation-for="Input.Email" class="validation-error-logpas"></span>
+        </div>
+
+        <div class="form-group-logpas">
+            <label asp-for="Input.Password">Пароль</label>
+            <input asp-for="Input.Password" class="input-field-logpas" id="registerPassword" autocomplete="new-password" />
+            <span asp-validation-for="Input.Password" class="validation-error-logpas"></span>
+        </div>
+
+        <div class="form-group-logpas">
+            <label asp-for="Input.ConfirmPassword">Подтвердите пароль</label>
+            <input asp-for="Input.ConfirmPassword" class="input-field-logpas" id="registerConfirmPassword" autocomplete="new-password" />
+            <span asp-validation-for="Input.ConfirmPassword" class="validation-error"></span>
+        </div>
+
+        <div class="form-group-logpas checkbox-group-logpas">
+            <input type="checkbox" id="showPasswordCheckbox" />
+            <label for="showPasswordCheckbox">Показывать пароль</label>
+        </div>
+
+        <button type="submit" class="btn-main-logpas">
+            Зарегистрироваться
+        </button>
+
+        <div class="login-links-logpas">
+            <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">
+                Уже есть аккаунт? Войти
+            </a>
+        </div>
+
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        const checkbox = document.getElementById("showPasswordCheckbox");
+        const password = document.getElementById("registerPassword");
+        const confirm = document.getElementById("registerConfirmPassword");
+
+        checkbox.addEventListener("change", function () {
+            const type = this.checked ? "text" : "password";
+            password.type = type;
+            confirm.type = type;
+        });
+    </script>
+}
+
+<!--
 <div class="row">
     <div class="col-md-4">
         <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
@@ -34,6 +93,7 @@
         <section>
             <h3>Use another service to register.</h3>
             <hr />
+            @*
             @{
                 if ((Model.ExternalLogins?.Count ?? 0) == 0)
                 {
@@ -57,11 +117,15 @@
                         </div>
                     </form>
                 }
+                *@
             }
         </section>
     </div>
 </div>
+-->
 
+@*
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
+*@

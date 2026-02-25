@@ -1,0 +1,28 @@
+﻿@page
+@model GamePortal.Pages.News.IndexModel
+
+<h2>Новости</h2>
+
+<div class="news-grid">
+    @foreach (var news in Model.NewsList)
+    {
+        <a asp-page="/News/Details"
+           asp-route-id="@news.Id"
+           class="news-card">
+
+            <div class="image-wrapper">
+                <img src="@(string.IsNullOrEmpty(news.ImageUrl)
+                                                      ? "/images/games/placeholder.jpg"
+                                                      : news.ImageUrl)" />
+
+                <div class="overlay">
+                    <h3>@news.Title</h3>
+                </div>
+            </div>
+        </a>
+    }
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/news.css" />
+}

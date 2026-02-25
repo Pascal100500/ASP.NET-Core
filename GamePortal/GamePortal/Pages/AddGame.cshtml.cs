@@ -3,42 +3,60 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Serilog.Context;
 
-[Authorize(Roles = "Admin")] // Ограничиваю возможность работы с данной страницей. С ней может работать только Администратор
+[Authorize(Roles = "Admin")] // РћРіСЂР°РЅРёС‡РёРІР°СЋ РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ СЂР°Р±РѕС‚С‹ СЃ РґР°РЅРЅРѕР№ СЃС‚СЂР°РЅРёС†РµР№. РЎ РЅРµР№ РјРѕР¶РµС‚ СЂР°Р±РѕС‚Р°С‚СЊ С‚РѕР»СЊРєРѕ РђРґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂ
 public class AddGameModel : PageModel
 {
     private readonly ApplicationDbContext _context;
-    
-    public AddGameModel(ApplicationDbContext context)
+    private readonly ILogger<AddGameModel> _logger;
+
+
+    public AddGameModel(ApplicationDbContext context, ILogger<AddGameModel> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     [BindProperty]
     public Game Game { get; set; } = new();
 
     [TempData]
-    public string? SuccessMessage { get; set; } // Для вывода сообщения об успешном дополнении игры!
+    public string? SuccessMessage { get; set; } // Р”Р»СЏ РІС‹РІРѕРґР° СЃРѕРѕР±С‰РµРЅРёСЏ РѕР± СѓСЃРїРµС€РЅРѕРј РґРѕРїРѕР»РЅРµРЅРёРё РёРіСЂС‹!
     public SelectList? Categories { get; set; }
     public void OnGet()
     {
         Categories = new SelectList(_context.Categories, "Id", "Name");
     }
-    // Опереция CREATE
+    // РћРїРµСЂРµС†РёСЏ CREATE
     public IActionResult OnPost()
     {
+        var adminEmail = User.Identity?.Name;
+        var ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknow"; // IP РјРѕР¶РµС‚ Р±С‹С‚СЊ null!!!
+
         if (!ModelState.IsValid)
         {
-            Categories = new SelectList(_context.Categories, "Id", "Name"); // Чтобы получить категорию игры и при перезагрузке Categories было заполнено
+            Categories = new SelectList(_context.Categories, "Id", "Name"); // Р§С‚РѕР±С‹ РїРѕР»СѓС‡РёС‚СЊ РєР°С‚РµРіРѕСЂРёСЋ РёРіСЂС‹ Рё РїСЂРё РїРµСЂРµР·Р°РіСЂСѓР·РєРµ Categories Р±С‹Р»Рѕ Р·Р°РїРѕР»РЅРµРЅРѕ
             return Page();
         }
-        Game.IsActive = true; // при добавлении игра доступна для продажи
+        Game.IsActive = true; // РїСЂРё РґРѕР±Р°РІР»РµРЅРёРё РёРіСЂР° РґРѕСЃС‚СѓРїРЅР° РґР»СЏ РїСЂРѕРґР°Р¶Рё
         Game.CreatedAt = DateTime.UtcNow;
 
-        _context.Games.Add(Game); // Добавление игры операция CREATE
-        _context.SaveChanges(); // Выполнение SQL запроса для реализации операции CREATE (INSERT в БД)
+        _context.Games.Add(Game); // Р”РѕР±Р°РІР»РµРЅРёРµ РёРіСЂС‹ РѕРїРµСЂР°С†РёСЏ CREATE
+        _context.SaveChanges(); // Р’С‹РїРѕР»РЅРµРЅРёРµ SQL Р·Р°РїСЂРѕСЃР° РґР»СЏ СЂРµР°Р»РёР·Р°С†РёРё РѕРїРµСЂР°С†РёРё CREATE (INSERT РІ Р‘Р”)
 
-        SuccessMessage = $"Игра \"{Game.Title}\" успешно добавлена!";
+        SuccessMessage = $"РРіСЂР° \"{Game.Title}\" СѓСЃРїРµС€РЅРѕ РґРѕР±Р°РІР»РµРЅР°!";
+
+        // Р›РѕРі Рѕ РґРѕР±Р°РІР»РµРЅРёРё РёРіСЂС‹. РўРµРїРµСЂСЊ СѓР¶Рµ РёСЃРїРѕР»СЊР·СѓСЋ Serilog ILogger
+        using (LogContext.PushProperty("LogType", "Admin"))
+        {
+            _logger.LogInformation(
+        "Р”РѕР±Р°РІР»РµРЅР° РёРіСЂР° GameId: {GameId} РЅР°Р·РІР°РЅРёРµ: {Title} Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂРѕРј: {Admin} | IP: {IP}",
+        Game.Id,
+        Game.Title,
+        adminEmail,
+        ip);
+        }
 
         return RedirectToPage("/Games/Index");
     }

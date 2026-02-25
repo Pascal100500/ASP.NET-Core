@@ -53,7 +53,7 @@ footer {
     /* margin-top: auto; */
 }
 
-/* === Добавления для стилизации === */
+/* === Добавления для стилизации  === */
 .form-container {
     max-width: 420px;
     margin: 40px auto;
@@ -397,7 +397,67 @@ footer {
     margin: 25px 0;
 }
 
-    .details-screenshots img {
-        width: 250px;
-        border-radius: 6px;
+.details-screenshots img {
+    width: 250px;
+    border-radius: 6px;
+}
+
+/*=== Страница входа (Login.cshtml) и регистрации === */
+.login-container-logpas {
+    width: 400px;
+    margin: 40px auto;
+    padding: 25px;
+    background-color: white;
+    border: 2px solid black;
+}
+
+    .login-container-logpas h2 {
+        text-align: center;
+        margin-bottom: 20px;
     }
+
+.form-group-logpas {
+    margin-bottom: 15px;
+}
+
+.input-field-logpas {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid black;
+    font-size: 14px;
+}
+
+    .input-field-logpas:focus {
+        outline: none;
+        border-color: #3fbf3f;
+    }
+
+.btn-main-logpas {
+    width: 100%;
+    padding: 10px;
+    background-color: #3fbf3f;
+    border: none;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+    .btn-main-logpas:hover {
+        background-color: #2e9e2e;
+    }
+
+.validation-error-logpas {
+    color: red;
+    font-size: 13px;
+}
+
+.login-links-logpas {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.checkbox-group-logpas {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}

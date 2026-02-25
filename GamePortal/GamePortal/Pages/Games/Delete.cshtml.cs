@@ -2,27 +2,30 @@ using GamePortal.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Serilog.Context;
 
 namespace GamePortal.Pages.Games
 {
-    [Authorize(Roles = "Admin")] // Ограничиваю возможность работы с данной страницей. С ней может работать только Администратор
+    [Authorize(Roles = "Admin")] // РћРіСЂР°РЅРёС‡РёРІР°СЋ РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ СЂР°Р±РѕС‚С‹ СЃ РґР°РЅРЅРѕР№ СЃС‚СЂР°РЅРёС†РµР№. РЎ РЅРµР№ РјРѕР¶РµС‚ СЂР°Р±РѕС‚Р°С‚СЊ С‚РѕР»СЊРєРѕ РђРґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂ
     public class DeleteModel : PageModel
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<AddGameModel> _logger;
 
-        public DeleteModel(ApplicationDbContext context)
+        public DeleteModel(ApplicationDbContext context, ILogger<AddGameModel> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         [BindProperty]
         public Game? Game { get; set; }
-        public string? SuccessMessage { get; set; } //Сообщение об успешном удалении игры
+        public string? SuccessMessage { get; set; } //РЎРѕРѕР±С‰РµРЅРёРµ РѕР± СѓСЃРїРµС€РЅРѕРј СѓРґР°Р»РµРЅРёРё РёРіСЂС‹
 
-        // SELECT нужной игры ( по id)
+        // SELECT РЅСѓР¶РЅРѕР№ РёРіСЂС‹ ( РїРѕ id)
         public IActionResult OnGet(int id)
         {
-            Game = _context.Games.Find(id); // Поиск нужной игры (SELECT)
+            Game = _context.Games.Find(id); // РџРѕРёСЃРє РЅСѓР¶РЅРѕР№ РёРіСЂС‹ (SELECT)
 
             if (Game == null)
                 return NotFound();
@@ -30,7 +33,7 @@ namespace GamePortal.Pages.Games
             return Page();
         }
 
-        // Реализация операции DELETE
+        // Р РµР°Р»РёР·Р°С†РёСЏ РѕРїРµСЂР°С†РёРё DELETE
         public IActionResult OnPost(int id)
         {
             var game = _context.Games.Find(id);
@@ -39,21 +42,34 @@ namespace GamePortal.Pages.Games
                 return NotFound();
 
             /*
-             Важно:
-             Title сохраняется до удаления, иначе после удаления объекта его уже не будет.
-            Потому что после удаления:
-            объект может стать Detached
-            а после Redirect у нас уже нет доступа к этому объекту
-            и при попытке вывода сообщения, что выбранная игра удалена, 
-            то нужного названия игры не будет
+             Р’Р°Р¶РЅРѕ:
+             Title СЃРѕС…СЂР°РЅСЏРµС‚СЃСЏ РґРѕ СѓРґР°Р»РµРЅРёСЏ, РёРЅР°С‡Рµ РїРѕСЃР»Рµ СѓРґР°Р»РµРЅРёСЏ РѕР±СЉРµРєС‚Р° РµРіРѕ СѓР¶Рµ РЅРµ Р±СѓРґРµС‚.
+            РџРѕС‚РѕРјСѓ С‡С‚Рѕ РїРѕСЃР»Рµ СѓРґР°Р»РµРЅРёСЏ:
+            РѕР±СЉРµРєС‚ РјРѕР¶РµС‚ СЃС‚Р°С‚СЊ Detached
+            Р° РїРѕСЃР»Рµ Redirect Сѓ РЅР°СЃ СѓР¶Рµ РЅРµС‚ РґРѕСЃС‚СѓРїР° Рє СЌС‚РѕРјСѓ РѕР±СЉРµРєС‚Сѓ
+            Рё РїСЂРё РїРѕРїС‹С‚РєРµ РІС‹РІРѕРґР° СЃРѕРѕР±С‰РµРЅРёСЏ, С‡С‚Рѕ РІС‹Р±СЂР°РЅРЅР°СЏ РёРіСЂР° СѓРґР°Р»РµРЅР°, 
+            С‚Рѕ РЅСѓР¶РЅРѕРіРѕ РЅР°Р·РІР°РЅРёСЏ РёРіСЂС‹ РЅРµ Р±СѓРґРµС‚
              */
             string deletedTitle = game.Title; 
             
-            _context.Games.Remove(game); //Пометили выбранную игру к удалению (операция DELETE)
-            _context.SaveChanges(); // Удаление из БД после сохранения
+            _context.Games.Remove(game); //РџРѕРјРµС‚РёР»Рё РІС‹Р±СЂР°РЅРЅСѓСЋ РёРіСЂСѓ Рє СѓРґР°Р»РµРЅРёСЋ (РѕРїРµСЂР°С†РёСЏ DELETE)
+            _context.SaveChanges(); // РЈРґР°Р»РµРЅРёРµ РёР· Р‘Р” РїРѕСЃР»Рµ СЃРѕС…СЂР°РЅРµРЅРёСЏ
 
-            SuccessMessage = $"Игра \"{deletedTitle}\" успешно удалена.";
+            SuccessMessage = $"РРіСЂР° \"{deletedTitle}\" СѓСЃРїРµС€РЅРѕ СѓРґР°Р»РµРЅР°.";
 
+            var adminEmail = User.Identity?.Name;
+            var ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknow"; // IP РјРѕР¶РµС‚ Р±С‹С‚СЊ null!!!
+
+            // Р›РѕРіРёСЂРѕРІР°РЅРёРµ СѓРґР°Р»РµРЅРёСЏ РёРіСЂС‹ С‚РµРїРµСЂСЊ СѓР¶Рµ РёСЃРїРѕР»СЊР·СѓСЋ Serilog ILogger
+            using (LogContext.PushProperty("LogType", "Admin"))
+            {
+                _logger.LogWarning(
+            "РЈРґР°Р»РµРЅР° РёРіСЂР° GameId: {GameId} РЅР°Р·РІР°РЅРёРµ: {Title} Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂРѕРј: {Admin} IP: {IP}",
+            game.Id,
+            game.Title,
+            adminEmail,
+            ip);
+            }
             return RedirectToPage("Index");
         }
     }

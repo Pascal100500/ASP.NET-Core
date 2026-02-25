@@ -1,0 +1,129 @@
+﻿body {
+}
+/* Сетка новостей */
+.news-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    width: 100%;
+}
+
+/* Карточка новости */
+.news-card {
+    width: 300px;
+    flex: 0 0 auto;
+    display: block; 
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #ddd;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+    .news-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+    }
+
+    .news-card .image-wrapper {
+        position: relative;
+        height: 200px; 
+        overflow: hidden;
+    }
+
+        .news-card .image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    /* Overlay */
+    .news-card .overlay {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        background: rgba(0,0,0,0.75);
+        color: white;
+        padding: 10px;
+        font-size: 16px;
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+    }
+
+    /* !!! hover по всей карточке, а не только по картинке */
+    .news-card:hover .overlay {
+        transform: translateY(0);
+    }
+
+/*=== Кнопка "Назад к новостям ===*/
+.news-back {
+    margin-top: 30px;
+}
+
+.back-btn-news {
+    display: inline-block;
+    padding: 10px 18px;
+    border-radius: 8px;
+    background-color: #2c3e50;
+    color: #ffffff;
+    text-decoration: none;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+    .back-btn-news:hover {
+        background-color: #34495e;
+        transform: translateY(-2px);
+    }
+
+/*=== Оформление формы добавления новостей ===*/
+.form-container-news {
+    max-width: 420px;
+    margin: 40px auto;
+    padding: 25px;
+    background-color: #f4f4f4;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    /*flex: 1; /*Для того, чтобы меню слева растянулось до низа !!!*/
+}
+
+.form-group-news {
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+    .form-group-news label {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .form-group-news input,
+    .form-group-news textarea {
+        padding: 8px;
+        font-size: 14px;
+        border: 1px solid #aaa;
+        border-radius: 4px;
+    }
+
+    .form-group-news textarea {
+        resize: vertical;
+        min-height: 70px;
+    }
+
+.checkbox-group-news {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-group-news span {
+    color: darkred;
+    font-size: 13px;
+}
+
+/*=== Для отображения текста новости с отступами ===*/
+.news-content {
+    white-space: pre-line;
+}

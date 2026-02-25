@@ -3,8 +3,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 using Microsoft.Extensions.Logging;
+using Serilog.Context;
+using System.Security.Claims;
 
 namespace GamePortal.Pages.Games
 {
@@ -19,14 +20,14 @@ namespace GamePortal.Pages.Games
             _logger = logger;
         }
 
-        public bool IsPurchased { get; set; } // Флаг для проверки куплена ли игра или нет
-        public bool IsInCart { get; set; } // Флаг для проверки добавлена игра в корзину или нет
+        public bool IsPurchased { get; set; } // Р¤Р»Р°Рі РґР»СЏ РїСЂРѕРІРµСЂРєРё РєСѓРїР»РµРЅР° Р»Рё РёРіСЂР° РёР»Рё РЅРµС‚
+        public bool IsInCart { get; set; } // Р¤Р»Р°Рі РґР»СЏ РїСЂРѕРІРµСЂРєРё РґРѕР±Р°РІР»РµРЅР° РёРіСЂР° РІ РєРѕСЂР·РёРЅСѓ РёР»Рё РЅРµС‚
         public Game? Game { get; set; }
 
-        // Операция READ по id
+        // РћРїРµСЂР°С†РёСЏ READ РїРѕ id
         public IActionResult OnGet(int id)
         {
-            Game = _context.Games.AsNoTracking().FirstOrDefault(g => g.Id == id); //Добавил метод AsNoTracking() чтобы не отслеживать обект Game и уксорить работу программы
+            Game = _context.Games.AsNoTracking().FirstOrDefault(g => g.Id == id); //Р”РѕР±Р°РІРёР» РјРµС‚РѕРґ AsNoTracking() С‡С‚РѕР±С‹ РЅРµ РѕС‚СЃР»РµР¶РёРІР°С‚СЊ РѕР±РµРєС‚ Game Рё СѓРєСЃРѕСЂРёС‚СЊ СЂР°Р±РѕС‚Сѓ РїСЂРѕРіСЂР°РјРјС‹
 
             if (Game == null)
             {
@@ -49,41 +50,41 @@ namespace GamePortal.Pages.Games
 
         public IActionResult OnPost(int id)
         {
-            Console.WriteLine("POST triggered");// для логов
-            Console.WriteLine($"id = {id}");// для логов
+            Console.WriteLine("POST triggered");// РґР»СЏ Р»РѕРіРѕРІ
+            Console.WriteLine($"id = {id}");// РґР»СЏ Р»РѕРіРѕРІ
             if (!User.Identity?.IsAuthenticated ?? true)
             {
                 return RedirectToPage("/Account/Login", new { area = "Identity" });
             }
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            Console.WriteLine($"userId = {userId}");// для логов
+            Console.WriteLine($"userId = {userId}");// РґР»СЏ Р»РѕРіРѕРІ
 
             var game = _context.Games.FirstOrDefault(g => g.Id == id);
 
             if (game == null || !game.IsActive)
             {
-                TempData["ErrorMessage"] = "Игра недоступна.";
-                Console.WriteLine("Game null or inactive");// лог
+                TempData["ErrorMessage"] = "РРіСЂР° РЅРµРґРѕСЃС‚СѓРїРЅР°.";
+                Console.WriteLine("Game null or inactive");// Р»РѕРі
                 return RedirectToPage();
             }
 
 
-            // Проверка, куплена ли игра ранее
+            // РџСЂРѕРІРµСЂРєР°, РєСѓРїР»РµРЅР° Р»Рё РёРіСЂР° СЂР°РЅРµРµ
             var alreadyPurchased = _context.Purchases.Any(p => p.GameId == id && p.UserId == userId);
             if (alreadyPurchased)
             {
-                TempData["ErrorMessage"] = "Игра уже куплена.";
-                Console.WriteLine("Game already buy"); // лог
+                TempData["ErrorMessage"] = "РРіСЂР° СѓР¶Рµ РєСѓРїР»РµРЅР°.";
+                Console.WriteLine("Game already buy"); // Р»РѕРі
                 return RedirectToPage();
             }
 
-            //Проверка, есть ли игра в корзине
+            //РџСЂРѕРІРµСЂРєР°, РµСЃС‚СЊ Р»Рё РёРіСЂР° РІ РєРѕСЂР·РёРЅРµ
             var alreadyInCart = _context.CartItems.Any(c => c.GameId == id && c.UserId == userId);
             if (alreadyInCart)
             {
-                TempData["ErrorMessage"] = "Игра уже добавлена в корзину.";
-                Console.WriteLine("Game already in Purchase");//лог
+                TempData["ErrorMessage"] = "РРіСЂР° СѓР¶Рµ РґРѕР±Р°РІР»РµРЅР° РІ РєРѕСЂР·РёРЅСѓ.";
+                Console.WriteLine("Game already in Purchase");//Р»РѕРі
                 return RedirectToPage();
             }
 
@@ -99,23 +100,28 @@ namespace GamePortal.Pages.Games
                 _context.CartItems.Add(cartItem);
                 _context.SaveChanges();
 
-                TempData["SuccessMessage"] = "Игра успешно добавлена в корзину!";
-                Console.WriteLine("Game buy!");//лог
-
-                _logger.LogInformation("Пользователь {UserId} добавил игру {GameId} в корзину", userId, id);
+                TempData["SuccessMessage"] = "РРіСЂР° СѓСЃРїРµС€РЅРѕ РґРѕР±Р°РІР»РµРЅР° РІ РєРѕСЂР·РёРЅСѓ!";
+                Console.WriteLine("Game buy!");//Р»РѕРі
+                using (LogContext.PushProperty("LogType", "User"))
+                {
+                    _logger.LogInformation("РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ {UserId} РґРѕР±Р°РІРёР» РёРіСЂСѓ {GameId} РІ РєРѕСЂР·РёРЅСѓ", userId, id);
+                }
             }
-            catch (DbUpdateException) // ЭТО ИСКЛЮЧЕНИЕ НЕ ДОЛЖНО ПРОИСХОДИТЬ, так как кнопка "уже в корзине" не отправляет POST
-            //но возможен race-condition при одновременных запросах
+            catch (DbUpdateException) // Р­РўРћ РРЎРљР›Р®Р§Р•РќРР• РќР• Р”РћР›Р–РќРћ РџР РћРРЎРҐРћР”РРўР¬, С‚Р°Рє РєР°Рє РєРЅРѕРїРєР° "СѓР¶Рµ РІ РєРѕСЂР·РёРЅРµ" РЅРµ РѕС‚РїСЂР°РІР»СЏРµС‚ POST
+            //РЅРѕ РІРѕР·РјРѕР¶РµРЅ race-condition РїСЂРё РѕРґРЅРѕРІСЂРµРјРµРЅРЅС‹С… Р·Р°РїСЂРѕСЃР°С…
             {
-                _logger.LogWarning ("Попытка повтороного добавления в корзину пользователем {UserId} игры {GameId}", userId, id);
+                using (LogContext.PushProperty("LogType", "User"))
+                {
+                    _logger.LogWarning("РџРѕРїС‹С‚РєР° РїРѕРІС‚РѕСЂРѕРЅРѕРіРѕ РґРѕР±Р°РІР»РµРЅРёСЏ РІ РєРѕСЂР·РёРЅСѓ РїРѕР»СЊР·РѕРІР°С‚РµР»РµРј {UserId} РёРіСЂС‹ {GameId}", userId, id);
+                }
 
-                TempData["ErrorMessage"] = "Игра уже находится в корзине";
+                TempData["ErrorMessage"] = "РРіСЂР° СѓР¶Рµ РЅР°С…РѕРґРёС‚СЃСЏ РІ РєРѕСЂР·РёРЅРµ";
             }
-            Console.WriteLine($"alreadyPurchased = {alreadyPurchased}");// лог
-            Console.WriteLine($"alreadyInCart = {alreadyInCart}");// лог
+            Console.WriteLine($"alreadyPurchased = {alreadyPurchased}");// Р»РѕРі
+            Console.WriteLine($"alreadyInCart = {alreadyInCart}");// Р»РѕРі
             Console.WriteLine($"GameId = {id}");
-            return RedirectToPage(new { id }); // Добавил переход по id, чтобы после покупки точно вернуться к страницы игры, которую купили
-            //Чтобы избежать случае с получением методом OnGet(int id) значения id=0, иначе игра не найдется
+            return RedirectToPage(new { id }); // Р”РѕР±Р°РІРёР» РїРµСЂРµС…РѕРґ РїРѕ id, С‡С‚РѕР±С‹ РїРѕСЃР»Рµ РїРѕРєСѓРїРєРё С‚РѕС‡РЅРѕ РІРµСЂРЅСѓС‚СЊСЃСЏ Рє СЃС‚СЂР°РЅРёС†С‹ РёРіСЂС‹, РєРѕС‚РѕСЂСѓСЋ РєСѓРїРёР»Рё
+            //Р§С‚РѕР±С‹ РёР·Р±РµР¶Р°С‚СЊ СЃР»СѓС‡Р°Рµ СЃ РїРѕР»СѓС‡РµРЅРёРµРј РјРµС‚РѕРґРѕРј OnGet(int id) Р·РЅР°С‡РµРЅРёСЏ id=0, РёРЅР°С‡Рµ РёРіСЂР° РЅРµ РЅР°Р№РґРµС‚СЃСЏ
         }
 
     }

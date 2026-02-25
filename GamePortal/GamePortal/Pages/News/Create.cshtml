@@ -1,0 +1,41 @@
+﻿@page
+@model GamePortal.Pages.News.CreateModel
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/news.css" />
+}
+
+<h2>Добавить новость</h2>
+<div class="form-container-news">
+<form method="post">
+    <div class="form-group-news">
+        <label>Заголовок</label>
+        <input asp-for="News.Title" />
+        <span asp-validation-for="News.Title"></span>
+    </div>
+
+    <div class="form-group-news">
+        <label>Текст новости</label>
+        <textarea asp-for="News.Content" rows="6"></textarea>
+        <span asp-validation-for="News.Content"></span>
+    </div>
+
+    <div class="form-group-news">
+        <label>Путь к изображению</label>
+        <input asp-for="News.ImageUrl" />
+    </div>
+
+        <div class="form-group-news" checkbox-group-news>
+        <label>
+            <input type="checkbox" asp-for="News.IsPublished" />
+            Опубликовать
+        </label>
+    </div>
+
+    <button type="submit">Сохранить</button>
+</form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Serilog.Context;
 using System.Security.Claims;
 
 namespace GamePortal.Pages.Cart
@@ -27,14 +28,14 @@ namespace GamePortal.Pages.Cart
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            // Хотя есть защита [Authorize], но дополнительно
+            // РҐРѕС‚СЏ РµСЃС‚СЊ Р·Р°С‰РёС‚Р° [Authorize], РЅРѕ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕ
             if (userId == null)
             {
                 return;
             }
 
             CartItems = _context.CartItems
-                .AsNoTracking() // //Добавил метод AsNoTracking() чтобы не отслеживать обект CartItems и уксорить работу программы
+                .AsNoTracking() // //Р”РѕР±Р°РІРёР» РјРµС‚РѕРґ AsNoTracking() С‡С‚РѕР±С‹ РЅРµ РѕС‚СЃР»РµР¶РёРІР°С‚СЊ РѕР±РµРєС‚ CartItems Рё СѓРєСЃРѕСЂРёС‚СЊ СЂР°Р±РѕС‚Сѓ РїСЂРѕРіСЂР°РјРјС‹
                 .Include(c => c.Game)
                 .Where(c => c.UserId == userId)
                 .ToList();
@@ -44,7 +45,7 @@ namespace GamePortal.Pages.Cart
                 .Sum(c => c.Game!.Price);
         }
 
-        // Для удаления игры
+        // Р”Р»СЏ СѓРґР°Р»РµРЅРёСЏ РёРіСЂС‹
         public async Task<IActionResult> OnPostRemove(int id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -64,6 +65,8 @@ namespace GamePortal.Pages.Cart
         public async Task<IActionResult> OnPostCheckout()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var email = User.Identity?.Name;// Р’РІРѕР¶Сѓ РїРµСЂРµРјРµРЅРЅСѓСЋ РґР»СЏ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ UserName. РџРѕ СѓРјРѕР»С‡Р°РµРёСЋ СЃРµР№С‡Р°СЃ Identity РёСЃРїРѕР»СЊР·СѓРµС‚ Email
+            var ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown"; // IP РјРѕР¶РµС‚ Р±С‹С‚СЊ null!!!
 
             var cartItems = await _context.CartItems
                 .Include(c => c.Game)
@@ -76,7 +79,7 @@ namespace GamePortal.Pages.Cart
 
             if (!activeItems.Any())
             {
-                TempData["ErrorMessage"] = "Нет доступных для покупки игр.";
+                TempData["ErrorMessage"] = "РќРµС‚ РґРѕСЃС‚СѓРїРЅС‹С… РґР»СЏ РїРѕРєСѓРїРєРё РёРіСЂ.";
                 return RedirectToPage();
             }
 
@@ -84,7 +87,7 @@ namespace GamePortal.Pages.Cart
 
             try
             {
-                // Получаем уже купленные игры
+                // РџРѕР»СѓС‡Р°РµРј СѓР¶Рµ РєСѓРїР»РµРЅРЅС‹Рµ РёРіСЂС‹
                 var purchasedGameIds = await _context.Purchases
                     .Where(p => p.UserId == userId)
                     .Select(p => p.GameId)
@@ -110,13 +113,30 @@ namespace GamePortal.Pages.Cart
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                TempData["SuccessMessage"] = "Покупка успешно завершена!";
-                //_logger.LogInformation("Пользователь {UserId} добавил игру {GameId} в корзину", userId, id);
+                TempData["SuccessMessage"] = "РџРѕРєСѓРїРєР° СѓСЃРїРµС€РЅРѕ Р·Р°РІРµСЂС€РµРЅР°!";
+
+
+                // Р›РѕРіРёСЂРѕРІР°РЅРёРµ СѓСЃРїРµС€РЅРѕР№ РїРѕРєСѓРїРєРё
+                using (LogContext.PushProperty("LogType", "User"))
+                {
+                    _logger.LogInformation(
+                "РЈСЃРїРµС€РЅР°СЏ РїРѕРєСѓРїРєР° РїРѕР»СЊР·РѕРІР°С‚РµР»РµРј: {User} РРіСЂ РєСѓРїР»РµРЅРѕ: {Count} РІСЃРµРіРѕ: {Total}  IP: {IP}",
+                userId,
+                activeItems.Count,
+                activeItems.Sum(i => i.Game!.Price),
+                ip);
+                }
             }
-            catch
+            catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                TempData["ErrorMessage"] = "Ошибка при оформлении заказа.";
+                TempData["ErrorMessage"] = "РћС€РёР±РєР° РїСЂРё РѕС„РѕСЂРјР»РµРЅРёРё Р·Р°РєР°Р·Р°.";
+
+                //Р»РѕРіРёСЂРѕРІР°РЅРёРµ РЅРµСѓРґР°С‡РЅРѕР№ РѕРїР»Р°С‚С‹
+                using (LogContext.PushProperty("LogType", "User"))
+                {
+                    _logger.LogError(ex, "РћС€РёР±РєР° РїСЂРё РѕС„РѕСЂРјР»РµРЅРёРё РѕРїР»Р°С‚С‹ РїРѕР»СЊР·РѕР°С‚РµР»РµРј {User} IP: {IP}", userId, ip);
+                }
             }
 
             return RedirectToPage();

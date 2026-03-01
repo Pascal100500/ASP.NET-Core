@@ -15,11 +15,14 @@ namespace GamePortal.Pages.News
        public List<Models.News> NewsList { get; set; } = new();
          public async Task OnGetAsync()
         {
-            NewsList = await _context.News
-                .Where(n => n.IsPublished)
-                .OrderBy(n => Guid.NewGuid())
+            var news = await _context.News
+               .Where(n => n.IsPublished)
+               .ToListAsync();   
+
+            NewsList = news
+                .OrderBy(n => Guid.NewGuid()) // Перенес метод, чтобы перемешивание новостей происходило в память
                 .Take(6)
-                .ToListAsync();
+                .ToList();
         }
     }
 }

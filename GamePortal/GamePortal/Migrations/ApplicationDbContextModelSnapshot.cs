@@ -47,7 +47,7 @@ namespace GamePortal.Migrations
                     b.HasIndex("UserId", "GameId")
                         .IsUnique();
 
-                    b.ToTable("CartItems");
+                    b.ToTable("CartItems", (string)null);
                 });
 
             modelBuilder.Entity("GamePortal.Models.Category", b =>
@@ -64,7 +64,7 @@ namespace GamePortal.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("GamePortal.Models.Game", b =>
@@ -78,7 +78,7 @@ namespace GamePortal.Migrations
                     b.Property<int>("AgeLimit")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CategoryId")
+                    b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
@@ -127,7 +127,7 @@ namespace GamePortal.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Games");
+                    b.ToTable("Games", (string)null);
                 });
 
             modelBuilder.Entity("GamePortal.Models.News", b =>
@@ -157,7 +157,7 @@ namespace GamePortal.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("News");
+                    b.ToTable("News", (string)null);
                 });
 
             modelBuilder.Entity("GamePortal.Models.Purchase", b =>
@@ -188,7 +188,7 @@ namespace GamePortal.Migrations
                     b.HasIndex("UserId", "GameId")
                         .IsUnique();
 
-                    b.ToTable("Purchases");
+                    b.ToTable("Purchases", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -408,7 +408,9 @@ namespace GamePortal.Migrations
                 {
                     b.HasOne("GamePortal.Models.Category", "Category")
                         .WithMany("Games")
-                        .HasForeignKey("CategoryId");
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Category");
                 });

@@ -3,6 +3,7 @@ using GamePortal.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using Serilog.Context;
 using Serilog.Events;
 
 // �������� ����� 
@@ -43,6 +44,12 @@ Log.Logger = new LoggerConfiguration()
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog();
 
+// ВЫБЕРИТЕ ПРОВАЙДЕРА В ФАЙЛЕ appsettings.json
+// Доступно: SqlServer, SQlite, Postgres
+
+//  !!!  WARNING  !!!
+// По задумке база данных SQLite должна находиться в папке Data в корне проекта.
+
 var dbProvider = builder.Configuration["DbProvider"];
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -54,7 +61,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
             break;
 
         case "SQLite":
-            options.UseSqlite(builder.Configuration.GetConnectionString("SQLite"));
+            options.UseSqlite(builder.Configuration.GetConnectionString("SQLite"),
+                 b => b.MigrationsAssembly("GamePortal"));
             break;
 
         default:
@@ -104,41 +112,106 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 
-// === �������� �������������� ����� ===
+// === Создание администратора и категорий для игр при первом запуске, а так же папки Data и всего прочего вспомогательного ===
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
 
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
     var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
+    var db = services.GetRequiredService<ApplicationDbContext>();
 
-    // ������� ���� Admin ���� �� ���
-    if (!await roleManager.RoleExistsAsync("Admin"))
+    try
     {
-        await roleManager.CreateAsync(new IdentityRole("Admin"));
-    }
-
-    // ��������� ���������� �� ������������
-    var adminEmail = "admin@example.com";
-    var adminUser = await userManager.FindByEmailAsync(adminEmail);
-
-    if (adminUser == null)
-    {
-        var newAdmin = new IdentityUser
+        // Если Работаем с SQLite то я создаю папку Data.
+        if (dbProvider == "SQLite")
         {
-            UserName = adminEmail,
-            Email = adminEmail,
-            EmailConfirmed = true
-        };
+            // Создаю папку Data для SQLite
+            var dataDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Data");
+            Directory.CreateDirectory(dataDirectory);
+            using (LogContext.PushProperty("LogType", "Admin"))
+            {
+                Log.Information("Создана папка для хранения базы данных SQLite"); // Лог о создании папки Data для SQLite
+            }
 
-        var result = await userManager.CreateAsync(newAdmin, "Admin123!");
-
-        if (result.Succeeded)
+        }
+        // Если Работаем с PostgreSQL или SQLite
+        if (dbProvider == "SQLite" || dbProvider == "Postgres")
         {
-            await userManager.AddToRoleAsync(newAdmin, "Admin");
-            Log.Information("Добавлен администратор {Email}", adminEmail); // ���������� � �������� ������ � ��������
+
+            db.Database.EnsureCreated();
+            using (LogContext.PushProperty("LogType", "Admin"))
+            {
+                Log.Information("{Provider} База данных создана через EnsureCreated()", dbProvider);
+            }
+        }
+
+        // Если работаем с SQL Server. К сожалению, сделать универсальные миграции и для PostgreSQL не удалось(
+        else
+        {
+            db.Database.Migrate(); // УЧИТЫВАЮ ВСЕ МИГРАЦИИ ПРИ СОЗДАНИИ БД
+            /*
+            using (LogContext.PushProperty("LogType", "Admin"))
+            {
+                Log.Information("{Provider}База данных создана через миграции", dbProvider);
+            }
+            */
+        }
+
+        // Admin 
+        if (!await roleManager.RoleExistsAsync("Admin"))
+        {
+            await roleManager.CreateAsync(new IdentityRole("Admin"));
+        }
+
+        var adminEmail = "admin@example.com";
+        var adminUser = await userManager.FindByEmailAsync(adminEmail);
+
+        if (adminUser == null)
+        {
+            var newAdmin = new IdentityUser
+            {
+                UserName = adminEmail,
+                Email = adminEmail,
+                EmailConfirmed = true
+            };
+
+            var result = await userManager.CreateAsync(newAdmin, "Admin123!");
+
+            if (result.Succeeded)
+            {
+                await userManager.AddToRoleAsync(newAdmin, "Admin");
+                using (LogContext.PushProperty("LogType", "User"))
+                {
+                    Log.Information("Добавлен администратор {Email}", adminEmail); // Исправил лог о создании администратора
+                }
+            }
+        }
+    
+
+        // Категории игр
+        if (!db.Categories.Any())
+        {
+            db.Categories.AddRange(
+                new Category { Name = "Action" },
+                new Category { Name = "RPG" },
+                new Category { Name = "Strategy" },
+                new Category { Name = "Adventure" },
+                new Category { Name = "Simulation" }
+            );
+
+            db.SaveChanges();
         }
     }
+    catch (Exception ex) 
+    {
+        using (LogContext.PushProperty("LogType", "Admin"))
+        {
+            Log.Error(ex, "Ошибка при инициализации базы данных");
+        }
+        throw;
+    }
+   
 }
 app.MapGamesApi(); // Мой REST для игр
 app.Run();

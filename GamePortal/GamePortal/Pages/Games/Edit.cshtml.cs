@@ -23,7 +23,7 @@ namespace GamePortal.Pages.Games
         [BindProperty]
         public Game Game { get; set; } = new();
 
-        public SelectList? Categories { get; set; }
+        public SelectList Categories { get; set; } // Теперь категории всегда должны быть заполнены
 
         //Получение данных для изменения!
         // Еще один READ по id

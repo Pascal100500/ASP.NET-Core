@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace GamePortal.Models
 {
@@ -12,7 +12,7 @@ namespace GamePortal.Models
         public int GameId { get; set; }
         public decimal PriceAtPurchase { get; set; }
 
-        public DateTime PurchaseDate { get; set; } = DateTime.Now;
+        public DateTime PurchaseDate { get; set; } = DateTime.UtcNow;
 
         public Game? Game { get; set; }
     }

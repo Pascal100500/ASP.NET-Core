@@ -67,3 +67,23 @@
 - API endpoints protected via authorization policies
 - Game modification (POST/PUT/DELETE) restricted to Admin role
 - Improved validation responses via ValidationProblemDetails
+
+## [v1.4.0] - 2026-03-01
+
+### Added
+- Multi-database support:
+  - SQLite provider (EnsureCreated)
+  - PostgreSQL provider (EnsureCreated)
+- Dynamic database provider selection via configuration (DbProvider)
+
+### Changed
+- Game Category (CategoryId) is now required on Create/Edit forms
+- Improved database initialization logic (Migrate for SQL Server, EnsureCreated for SQLite/PostgreSQL)
+
+### Infrastructure
+- PostgreSQL backup/restore workflow verified (pg_dump / pg_restore)
+- Backup and restore tested using:
+- pg_dump 18.x
+- pg_restore 18.x
+
+Note: pg_dump/pg_restore version must not be lower than server version.

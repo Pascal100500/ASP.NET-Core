@@ -27,10 +27,16 @@
             <span asp-validation-for="Game.FullDescription"></span>
         </div>
 
-        <select asp-for="Game.CategoryId"
-                asp-items="Model.Categories">
-            <option value="">-- Выберите категорию --</option>
-        </select>
+        <div class="form-group">
+            <label asp-for="Game.CategoryId"></label>
+
+            <select asp-for="Game.CategoryId"
+                    asp-items="Model.Categories">
+                <option value="">-- Выберите категорию --</option>
+            </select>
+
+            <span asp-validation-for="Game.CategoryId"></span>
+        </div>
 
         <div class="form-group">
             <label asp-for="Game.Price"></label>

@@ -66,6 +66,12 @@
     </div>
 
     <footer>
+        <!--Аудиоплеер-->
+        <audio id="site-audio" controls loop>
+            <source src="/music/theme.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+
         <p>© @DateTime.Now.Year</p>
     </footer>
 
@@ -75,6 +81,39 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
     -->
     @RenderSection("Scripts", required: false)
-    
+
+    <!--Скрипты для плеера. чтобы он сохранял состояние при перезагрузке страниц-->
+    <script>
+
+             document.addEventListener("DOMContentLoaded", function () {
+
+            const audio = document.getElementById("site-audio");
+
+            // Установить громкость 20%
+            audio.volume = 0.2;
+
+            // Восстановить позицию
+            const savedTime = localStorage.getItem("audioTime");
+            if (savedTime) {
+                audio.currentTime = parseFloat(savedTime);
+            }
+
+            // Восстановить состояние воспроизведения
+            const wasPlaying = localStorage.getItem("audioPlaying");
+            if (wasPlaying === "true") {
+                audio.play().catch(() => {}); // Чтобы плеер не падал при нажатии браузерной кнопки "Назад"
+            }
+        });
+
+        // Сохранить позицию и состояние при уходе
+        window.addEventListener("beforeunload", function () {
+
+            const audio = document.getElementById("site-audio");
+
+            localStorage.setItem("audioTime", audio.currentTime);
+            localStorage.setItem("audioPlaying", !audio.paused);
+        });
+    </script>
+
 </body>
 </html>

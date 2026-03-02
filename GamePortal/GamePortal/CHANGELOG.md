@@ -87,3 +87,12 @@
 - pg_restore 18.x
 
 Note: pg_dump/pg_restore version must not be lower than server version.
+
+## [1.4.1] - 2026-03-01
+
+### Added
+- Sale and Top 10 pages populated based on `IsOnSale` and `IsTopGame` flags
+- HTML5 audio player integrated into the main layout (background music support)
+
+### UI Improvements
+- Audio player now preserves playback position between page navigations

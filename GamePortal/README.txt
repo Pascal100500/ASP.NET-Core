@@ -28,8 +28,8 @@ erDiagram
     Categories ||--o{ Games : has
     Games ||--o{ CartItems : added_to
     Games ||--o{ Purchases : purchased
-    AspNetUsers ||--o{ CartItems : owns
     AspNetUsers ||--o{ Purchases : makes
+    AspNetUsers ||--o{ CartItems : owns
 
     AspNetRoles ||--o{ AspNetRoleClaims : contains
     AspNetRoles ||--o{ AspNetUserRoles : assigned

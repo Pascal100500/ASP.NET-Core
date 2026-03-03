@@ -461,3 +461,13 @@ footer {
     align-items: center;
     gap: 6px;
 }
+
+/* === Подсказка об уже созданных пользователях и о том, как регестрироваться на страницах "Login.cshtml" и "Rgister.cshtml"==== */
+.identity-info {
+    margin-top: 10px;
+    padding: 12px;
+    background-color: #f0f4ff;
+    border-left: 4px solid #4a6cf7;
+    border-radius: 4px;
+    font-size: 14px;
+}

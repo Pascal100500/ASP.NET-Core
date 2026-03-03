@@ -96,3 +96,12 @@ Note: pg_dump/pg_restore version must not be lower than server version.
 
 ### UI Improvements
 - Audio player now preserves playback position between page navigations
+
+## [1.4.2] - 2026-03-03
+
+### Changed
+- Simplified password requirements for academic testing (minimum length: 6, no mandatory digits or special characters)
+
+### Added
+- ER database diagram added to README
+- Informational hints added to Login and Register pages

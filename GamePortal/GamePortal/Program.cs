@@ -73,9 +73,25 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 {
-    options.SignIn.RequireConfirmedAccount = false;
+    options.SignIn.RequireConfirmedAccount = false; // отключение подтвержения эмеил адреса
+    options.Password.RequireDigit = false; // Цыфры в пароле не обязательны
+    options.Password.RequireLowercase = false; // не обязательное наличие строчных букв
+    options.Password.RequireUppercase = false; // не обязательное наличие заглавных букв
+    options.Password.RequireNonAlphanumeric = false; // не обязательное наличие специальных символов
+    options.Password.RequiredLength = 6; // оставил длину пароля 6 символов минимум
 })
-.AddRoles<IdentityRole>() // ���������� ��� �������� ���� ��������������
+/*
+ Когда вызывается await _userManager.CreateAsync(user, Input.Password);
+НАХОДИТСЯ В ФАЙЛЕ "Register.cshtml.cs"
+
+Identity:
+- Проверяет валидаторы пароля
+- Если пароль не проходит — возвращает список ошибок
+- Эти ошибки попадают в ModelState
+ */
+
+
+.AddRoles<IdentityRole>() 
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddErrorDescriber<RussianIdentityErrorDescriber>();
 
@@ -140,10 +156,12 @@ using (var scope = app.Services.CreateScope())
         {
 
             db.Database.EnsureCreated();
+            /*
             using (LogContext.PushProperty("LogType", "Admin"))
             {
                 Log.Information("{Provider} База данных создана через EnsureCreated()", dbProvider);
             }
+            */
         }
 
         // Если работаем с SQL Server. К сожалению, сделать универсальные миграции и для PostgreSQL не удалось(

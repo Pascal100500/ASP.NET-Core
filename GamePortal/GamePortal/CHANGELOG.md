@@ -105,3 +105,17 @@ Note: pg_dump/pg_restore version must not be lower than server version.
 ### Added
 - ER database diagram added to README
 - Informational hints added to Login and Register pages
+
+## [v1.4.3] - 2026-03-05
+
+### Added
+- Welcome section and video player on the main page
+- Add js mini-game "MathGame"
+- Mermaid diagrams for project documentation
+
+### UI
+- Improved layout and content containers for better readability
+- Animated gradient navigation buttons in the left menu
+
+### Changed
+- Improved database initialization logic using `Database.CanConnect()` to avoid repeated creation on application startup

@@ -79,13 +79,34 @@
 
 /*=== Оформление формы добавления новостей ===*/
 .form-container-news {
-    max-width: 420px;
+    /*max-width: 700px;*/
     margin: 40px auto;
     padding: 25px;
     background-color: #f4f4f4;
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     /*flex: 1; /*Для того, чтобы меню слева растянулось до низа !!!*/
+    /* 1. Задаем градиент с цветами */
+    background: linear-gradient( -45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab );
+    /* 2. Увеличиваем размер фона, чтобы цвета не помещались целиком */
+    background-size: 400% 400%;
+    /* 3. Применяем анимацию */
+    animation: gradientAnimation 10s ease infinite;
+}
+
+/* 4. Описываем анимацию движения фона */
+@keyframes gradientAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 .form-group-news {

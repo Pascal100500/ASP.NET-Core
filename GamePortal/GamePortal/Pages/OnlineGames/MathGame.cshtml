@@ -1,4 +1,30 @@
 ﻿@page
-@model GamePortal.Pages.OnlineGames.MathGameModel
-@{
+@model MathGameModel
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/mathgame.css" />
 }
+
+@section Scripts {
+    <script src="~/js/mathgame.js"></script>
+}
+
+<h2 style="background-color: lightblue; padding: 5px; display: inline-block; color:mediumorchid">Математическая игра</h2>
+
+<div class="math-game-container">
+
+    <div class="task">
+        <span id="num1">0</span>
+        +
+        <span id="num2">0</span>
+        =
+    </div>
+
+    <input id="answer" type="number" placeholder="Введите ответ">
+
+    <button id="checkBtn">Проверить</button>
+    <button id="newTaskBtn">Новое задание</button>
+
+    <p id="result"></p>
+
+</div>

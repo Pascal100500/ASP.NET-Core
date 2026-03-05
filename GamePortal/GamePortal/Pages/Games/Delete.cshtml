@@ -1,6 +1,8 @@
 ﻿@page "{id:int}"
 @model GamePortal.Pages.Games.DeleteModel
 
+<div class=" game-details-container">
+    
 <h2>Удаление игры</h2>
 
 @if (Model.Game != null)
@@ -14,7 +16,7 @@
     <br />
 
     <form method="post">
-        <button type="submit" class="btn-submit" style="background-color: darkred;">
+        <button type="submit" class="btn-submit" style="background-color: orangered;">
             Подтвердить удаление
         </button>
     </form>
@@ -22,3 +24,4 @@
     <br />
     <a asp-page="Index">← Отмена</a>
 }
+</div>

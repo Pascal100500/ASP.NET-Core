@@ -74,7 +74,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false; // отключение подтвержения эмеил адреса
-    options.Password.RequireDigit = false; // Цыфры в пароле не обязательны
+    options.Password.RequireDigit = false; // Цифры в пароле не обязательны
     options.Password.RequireLowercase = false; // не обязательное наличие строчных букв
     options.Password.RequireUppercase = false; // не обязательное наличие заглавных букв
     options.Password.RequireNonAlphanumeric = false; // не обязательное наличие специальных символов
@@ -139,41 +139,46 @@ using (var scope = app.Services.CreateScope())
 
     try
     {
-        // Если Работаем с SQLite то я создаю папку Data.
-        if (dbProvider == "SQLite")
-        {
-            // Создаю папку Data для SQLite
-            var dataDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Data");
-            Directory.CreateDirectory(dataDirectory);
-            using (LogContext.PushProperty("LogType", "Admin"))
+        bool databaseExists = db.Database.CanConnect(); // Добавил метод для проверки может ли EF подключиться к базе данных, чтобы узнать создана она или еще нет
+        if (!databaseExists)
+        { 
+        
+            // Если Работаем с SQLite то я создаю папку Data.
+            if (dbProvider == "SQLite")
             {
-                Log.Information("Создана папка для хранения базы данных SQLite"); // Лог о создании папки Data для SQLite
+                // Создаю папку Data для SQLite
+                var dataDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Data");
+                Directory.CreateDirectory(dataDirectory);
+                using (LogContext.PushProperty("LogType", "Admin"))
+                {
+                    Log.Information("Создана папка для хранения базы данных SQLite"); // Лог о создании папки Data для SQLite
+                }
+
+            }
+            // Если Работаем с PostgreSQL или SQLite
+            if (dbProvider == "SQLite" || dbProvider == "Postgres")
+            {
+
+                db.Database.EnsureCreated();
+                
+                using (LogContext.PushProperty("LogType", "Admin"))
+                {
+                    Log.Information("{Provider} База данных создана через EnsureCreated()", dbProvider);
+                 }
+                 
             }
 
-        }
-        // Если Работаем с PostgreSQL или SQLite
-        if (dbProvider == "SQLite" || dbProvider == "Postgres")
-        {
-
-            db.Database.EnsureCreated();
-            /*
-            using (LogContext.PushProperty("LogType", "Admin"))
+             // Если работаем с SQL Server. К сожалению, сделать универсальные миграции и для PostgreSQL не удалось(
+            else
             {
-                Log.Information("{Provider} База данных создана через EnsureCreated()", dbProvider);
+                 db.Database.Migrate(); // УЧИТЫВАЮ ВСЕ МИГРАЦИИ ПРИ СОЗДАНИИ БД
+                
+                using (LogContext.PushProperty("LogType", "Admin"))
+                {
+                    Log.Information("{Provider}База данных создана через миграции", dbProvider);
+                }
+                
             }
-            */
-        }
-
-        // Если работаем с SQL Server. К сожалению, сделать универсальные миграции и для PostgreSQL не удалось(
-        else
-        {
-            db.Database.Migrate(); // УЧИТЫВАЮ ВСЕ МИГРАЦИИ ПРИ СОЗДАНИИ БД
-            /*
-            using (LogContext.PushProperty("LogType", "Admin"))
-            {
-                Log.Information("{Provider}База данных создана через миграции", dbProvider);
-            }
-            */
         }
 
         // Admin 

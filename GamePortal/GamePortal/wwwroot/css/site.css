@@ -5,6 +5,11 @@
 }
 
 body {
+   /* background-color: #0f172a;*/
+    /*background-image: url("/images/fons/back.jpg");/*
+    /*background-size: cover;*/
+    /*background-repeat: repeat;*/
+    /*background-attachment: fixed;*/
     display: flex;
     flex-direction: column;
     height: 100vh;
@@ -38,7 +43,10 @@ nav {
         }
 
 /* === Основной контент === */
+/*моя оставшаяся правая частьдля всего контента!!!*/
 main {
+    background-image: url("/images/fons/back.jpg");
+    background-repeat: repeat;
     flex: 1;
     padding: 30px;
     display: block;
@@ -128,6 +136,7 @@ footer {
 
     /* === Для навигационного меню слева === */
 .main-wrapper {
+    /*background-color: #0f172a;*/
     display: flex;
     /*min-height: 100%;*/
     flex: 1;
@@ -138,6 +147,8 @@ footer {
     padding: 20px;
     border-right: 3px solid black;
     align-self: stretch;
+    /*Цветной фон только в левой части меню, в правой будет картинка*/
+    background-color: #0f172a;
 }
 
     .left-menu a {
@@ -147,24 +158,37 @@ footer {
         border: 3px solid black;
         text-align: center;
         text-decoration: none;
-        color: black;
+        color: greenyellow;
         font-weight: bold;
-        background-color: #f4f4f4;
+        /* background-color: #f4f4f4;*/
+        /* градиент */
+        background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+        background-size: 400% 400%;
+        animation: gradientAnimation 10s ease infinite;
+        transition: transform 0.2s;
     }
 
         .left-menu a:hover {
-            background-color: #ddd;
+            /*background-color: #ddd;*/
+            transform: scale(1.05);
         }
 
-/*
-    main {
-    flex: 1;
-    padding: 30px;
+@keyframes gradientAnimation {
+
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
 }
-    */
 
 /* === вертикальный список (для обычных игр) === */
-
 .games-grid {
     display: flex;
     flex-wrap: wrap;
@@ -259,10 +283,6 @@ footer {
     text-align: center;
     border: 3px solid #2c3e50;
     background-color: #f4f4f4;
-    /*font-weight: bold;*/
-    /*text-decoration: none;*/
-    /*color: black;*/
-    /*transition: 0.2s ease;*/
 }
 
     .online-game-card:hover {
@@ -471,3 +491,119 @@ footer {
     border-radius: 4px;
     font-size: 14px;
 }
+
+/* === Оформление начальной страницы === */
+.form-container-firstpage {
+    display: block;
+    margin: 20px auto;
+    max-width: 70%;
+    /*max-width: 660px;*/
+    /*margin: 10px auto;*/
+    /*padding: 1px;*/
+    /*background-color: #7cfc00;*/
+    /*Делаю фон контейнера с градиентом цветов*/
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    /* 1. Задаем градиент с  цветами */
+    background: linear-gradient( -45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab );
+    /* 2. Увеличиваем размер фона, чтобы цвета не помещались целиком */
+    background-size: 400% 400%;
+    /* 3. Применяем анимацию */
+    animation: gradientAnimationButton 10s ease infinite;
+}
+
+/* 4. Описываем анимацию движения фона */
+@keyframes gradientAnimationButton {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+ 
+.form-container-firstpage p {
+    max-width: 600px;
+    margin: 10px auto;
+    text-align: center;
+}
+
+#maximVideo {
+    display: block;
+    margin: 20px auto;
+    max-width: 100%;
+}
+
+/* Для указателя на видео*/
+.video-hint {
+    margin-top: 15px;
+    font-weight: 500;
+}
+
+/*=== Пришлось добавить контейнер, чтобы текс на странице с описанием игры можно было бы прочитать ===*/
+.game-details-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 25px;
+    background-color: rgba(255,255,255,0.95);
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.game-description-box {
+    border: 1px solid #ccc;
+    padding: 15px;
+}
+/*===================================================================*/
+
+/*=== Стили для входа и регистрации ===*/
+/* Панель пользователя */
+.user-panel {
+    float: right;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* текст приветствия */
+.user-greeting {
+    color: #f1f1f1;
+    font-weight: bold;
+}
+
+/* форма выхода */
+.logout-form {
+    display: inline;
+}
+
+/* кнопка выхода */
+.btn-logout {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #e74c3c;
+    color: white;
+    cursor: pointer;
+}
+
+    .btn-logout:hover {
+        background-color: #c0392b;
+    }
+
+/* ссылки вход/регистрация */
+.login-link,
+.register-link {
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+    .login-link:hover,
+    .register-link:hover {
+        text-decoration: underline;
+    }

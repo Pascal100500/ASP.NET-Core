@@ -10,9 +10,9 @@ namespace GamePortal.Pages.Games
     public class DeleteModel : PageModel
     {
         private readonly ApplicationDbContext _context;
-        private readonly ILogger<AddGameModel> _logger;
+        private readonly ILogger<DeleteModel> _logger;
 
-        public DeleteModel(ApplicationDbContext context, ILogger<AddGameModel> logger)
+        public DeleteModel(ApplicationDbContext context, ILogger<DeleteModel> logger)
         {
             _context = context;
             _logger = logger;
@@ -20,6 +20,7 @@ namespace GamePortal.Pages.Games
 
         [BindProperty]
         public Game? Game { get; set; }
+        [TempData]
         public string? SuccessMessage { get; set; } //Сообщение об успешном удалении игры
 
         // SELECT нужной игры ( по id)
@@ -58,7 +59,7 @@ namespace GamePortal.Pages.Games
             SuccessMessage = $"Игра \"{deletedTitle}\" успешно удалена.";
 
             var adminEmail = User.Identity?.Name;
-            var ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknow"; // IP может быть null!!!
+            var ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown"; // IP может быть null!!!
 
             // Логирование удаления игры теперь уже использую Serilog ILogger
             using (LogContext.PushProperty("LogType", "Admin"))

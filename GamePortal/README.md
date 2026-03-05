@@ -22,8 +22,8 @@
 На этой диаграмме представлена ​​структура базы данных GamePortal v1.4.1,
 включая бизнес-сущности и схему ASP.NET Core Identity.
 
+Бизнес - логика
 ```mermaid
-
 erDiagram
 
     Categories ||--o{ Games : has
@@ -31,6 +31,12 @@ erDiagram
     Games ||--o{ Purchases : purchased
     AspNetUsers ||--o{ CartItems : owns
     AspNetUsers ||--o{ Purchases : makes
+```
+
+Identity
+
+```mermaid
+erDiagram
 
     AspNetRoles ||--o{ AspNetRoleClaims : contains
     AspNetRoles ||--o{ AspNetUserRoles : assigned
@@ -38,6 +44,58 @@ erDiagram
     AspNetUsers ||--o{ AspNetUserClaims : has
     AspNetUsers ||--o{ AspNetUserLogins : has
     AspNetUsers ||--o{ AspNetUserTokens : has
+```
+
+Новости
+
+```mermaid
+erDiagram
+
+News {
+        int Id
+        string Title
+        string Content
+        string ImageUrl
+        datetime CreatedAt
+        bool IsPublished
+    }
+```
+
+### Game Purchase Flow
+Диаграмма того, как происходит процесс покупки игры пользователем
+
+```mermaid
+flowchart TD
+
+A[User opens game page]
+B{Game already purchased?}
+C[Show Purchased]
+D[Add game to cart]
+E[Open Cart page]
+F{Game available?}
+G[Show Unavailable]
+H[Checkout]
+I[Create Purchase record]
+J[Remove item from Cart]
+K[Show success message]
+
+A --> B
+
+B -- Yes --> C
+B -- No --> D
+
+D --> E
+E --> F
+
+F -- No --> G
+F -- Yes --> H
+
+H --> I
+
+I --> J
+
+J --> K
+
 ```
 
 Более подробно о версии 1.0
@@ -155,5 +213,24 @@ LogContext.PushProperty("LogType", "Role")
 ## Изменения в версии 1.4.2
 - Упрощен ввод пароля: пароль может не содержать цифр, заглавных/строчных букв, спецсимволов
 
+## Изменения в версии 1.4.3
+- Добавлено приветствие и видеоплеер на главной странице
+- Улучшено оформление интерфейса и контейнеров для текста
+- Добавлены анимированные кнопки навигации в левом меню
+- Добавлена простая js мини-игра "MathGame"
+- Улучшена логика инициализации базы данных с использованием Database.CanConnect()
+- Добавлены диаграммы Mermaid для документации проекта
+
+### Известные ограничения
+
+В текущей версии проекта возможны неточности при отображении сообщений интерфейса.
+
+Для передачи сообщений между страницами используется механизм `TempData`. 
+В проекте используются только два ключа — `SuccessMessage` и `ErrorMessage`, 
+которые применяются для различных операций: работы с играми, логики корзины 
+и действий библиотеки ASP.NET Core Identity.
+
+В некоторых сценариях это может приводить к отображению сообщений, 
+относящихся к предыдущим действиям пользователя.
 
 

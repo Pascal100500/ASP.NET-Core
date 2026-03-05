@@ -1,6 +1,7 @@
 ﻿@page
 @model GamePortal.Pages.Cart.IndexModel
 
+<div class="form-container">
 <h2>Корзина</h2>
 
 @if (!Model.CartItems.Any())
@@ -51,3 +52,4 @@ else
     <button class="btn-cart-pay" disabled="@(Model.Total == 0)">Оплатить</button>
     </form>
 }
+</div>

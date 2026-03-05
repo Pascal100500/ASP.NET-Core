@@ -9,7 +9,7 @@
 <body>
 
     <header>
-        <h1>🎮 Game Portal V1.3</h1>
+        <h1>🎮 Game Portal V1.4.3</h1>
     </header>
 
     <nav>
@@ -20,26 +20,28 @@
         <a asp-page="/News/Create">Добавить новость</a>
         }
         <a asp-page="/About">О разработчике</a>
+        <a asp-page="/History">История изменений</a>
 
-        <span style="float:right">
+        <div class="user-panel">
             @if (User.Identity != null && User.Identity.IsAuthenticated)
             {
-                <span>Привет, @User.Identity.Name!</span>
+                <span class="user-greeting">👤 Привет, @User.Identity.Name!</span>
+
                 <form asp-area="Identity"
                       asp-page="/Account/Logout"
                       method="post"
-                      style="display:inline;">
-                    <button type="submit" class="btn-submit" style="width:auto; padding:5px 10px;">
+                      class="logout-form">
+                    <button type="submit" class="btn-logout">
                         Выйти
                     </button>
                 </form>
             }
             else
             {
-                <a asp-area="Identity" asp-page="/Account/Login">Вход</a>
-                <a asp-area="Identity" asp-page="/Account/Register">Регистрация</a>
+                <a class="login-link" asp-area="Identity" asp-page="/Account/Login">Вход</a>
+                <a class="register-link" asp-area="Identity" asp-page="/Account/Register">Регистрация</a>
             }
-        </span>
+        </div>
 
     </nav>
 
@@ -67,7 +69,7 @@
 
     <footer>
         <!--Аудиоплеер-->
-        <audio id="site-audio" controls loop>
+        <audio id="site-audio" controls loop style="width:300px"> <!--Задал ширину плееру, чтобы не сужать полосу перемотки-->
             <source src="/music/theme.mp3" type="audio/mpeg">
             Your browser does not support the audio element.
         </audio>

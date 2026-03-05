@@ -1,0 +1,24 @@
+﻿
+.about-container {
+    background-image: url("/images/fons/about.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    max-width: 50%;
+    margin: 40px auto;
+    padding: 30px;
+    border-radius: 10px;
+}
+
+.about-left img {
+    width: 200px;
+}
+
+.about-right {
+    max-width: 500px;
+    font-size: 16px;
+    line-height: 1.6;
+}

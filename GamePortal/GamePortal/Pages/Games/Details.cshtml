@@ -1,6 +1,7 @@
 ﻿@page "{id:int}"
 @model GamePortal.Pages.Games.DetailsModel
 
+<div class="game-details-container">
 <!--Реализация READ по Id-->
 
 <h2 class="game-title">@Model.Game!.Title</h2>
@@ -13,7 +14,7 @@
 </div>
 
 
-<div style="border:1px solid #ccc; padding:15px;">
+    <div class="game-description-box">
     <p><strong>Описание:</strong></p>
     <p class="full-description">@Model.Game.FullDescription</p>
 
@@ -59,3 +60,4 @@
 </form>
 
 <a asp-page="Index">← Назад к списку игр</a>
+</div>
